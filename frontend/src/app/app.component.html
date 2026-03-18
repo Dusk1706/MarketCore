@@ -1,0 +1,16 @@
+<mat-toolbar color="primary">
+  <span routerLink="/">MarketCore</span>
+  <span class="spacer"></span>
+  <button mat-button routerLink="/catalog">Catálogo</button>
+  @if (authService.isAuthenticated()) {
+    <button mat-button routerLink="/seller">Vender</button>
+    <button mat-button (click)="logout()">Cerrar Sesión ({{ authService.currentUser()?.name }})</button>
+  } @else {
+    <button mat-button routerLink="/auth/login">Iniciar Sesión</button>
+    <button mat-button routerLink="/auth/register">Registrarse</button>
+  }
+</mat-toolbar>
+
+<main>
+  <router-outlet></router-outlet>
+</main>

@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: marketcore
+      POSTGRES_PASSWORD: marketcore_pass
+      POSTGRES_DB: marketcore_db
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketcore -d marketcore_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://marketcore:marketcore_pass@db:5432/marketcore_db
+      JWT_SECRET_KEY: dev_secret_key
+      FLASK_APP: app:create_app
+      FLASK_ENV: development
+      SWAGGER_TEMPLATE_PATH: /docs/api/openapi.yaml
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - ./docs:/docs:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend

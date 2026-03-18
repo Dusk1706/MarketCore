@@ -1,0 +1,36 @@
+.catalog-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  
+  header {
+    margin-bottom: 2rem;
+    
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: #333;
+    }
+  }
+  
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    padding: 4rem;
+  }
+  
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  
+  .no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem;
+    color: #666;
+    font-size: 1.2rem;
+  }
+}

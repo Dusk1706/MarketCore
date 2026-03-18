@@ -1,0 +1,27 @@
+<mat-card class="product-card">
+  @if (product().image_url) {
+    <img mat-card-image [src]="product().image_url" [alt]="product().title">
+  } @else {
+    <div class="placeholder-img">Sin Imagen</div>
+  }
+  
+  <mat-card-header>
+    <mat-card-title>{{ product().title }}</mat-card-title>
+    <mat-card-subtitle>{{ product().category_slug }}</mat-card-subtitle>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <p class="description">{{ product().description }}</p>
+    <div class="price">{{ product().price | currency }}</div>
+  </mat-card-content>
+  
+  <mat-card-actions align="end">
+    @if (product().is_sold) {
+      <mat-chip highlighted color="warn">Vendido</mat-chip>
+    } @else {
+      <button mat-flat-button color="primary">
+        Ver Detalles
+      </button>
+    }
+  </mat-card-actions>
+</mat-card>

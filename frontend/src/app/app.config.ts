@@ -1,0 +1,17 @@
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+
+import { routes } from './app.routes';
+import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { BASE_PATH } from './core/api/variables';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes), 
+    provideAnimationsAsync(),
+    provideHttpClient(withInterceptors([jwtInterceptor])),
+    { provide: BASE_PATH, useValue: 'http://localhost:5000/api/v1' }
+  ]
+};

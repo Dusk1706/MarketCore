@@ -1,0 +1,10 @@
+<div class="auth-page-container">
+  <app-login-form 
+    [isLoading]="isLoading()" 
+    (login)="onLogin($event)">
+  </app-login-form>
+
+  <div class="auth-footer">
+    <p>¿No tienes una cuenta? <a routerLink="/auth/register">Regístrate aquí</a></p>
+  </div>
+</div>

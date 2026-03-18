@@ -1,0 +1,76 @@
+<div class="dashboard-container">
+  <header>
+    <h1>Mi Panel de Vendedor</h1>
+    <button mat-flat-button color="primary" (click)="openCreateForm()" [disabled]="isFormOpen()">
+      <mat-icon>add</mat-icon>
+      PUBLICAR PRODUCTO
+    </button>
+  </header>
+
+  @if (isFormOpen()) {
+    <div class="form-section">
+      <app-product-form 
+        [categories]="categories()" 
+        [initialData]="editingProduct()" 
+        [isLoading]="isLoading()"
+        (save)="onSave($event)"
+        (cancel)="closeForm()">
+      </app-product-form>
+    </div>
+  }
+
+  <div class="table-section">
+    @if (isLoading() && !isFormOpen()) {
+      <div class="spinner-container">
+        <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="products()" class="mat-elevation-z2">
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Producto</th>
+          <td mat-cell *matCell="let p">{{ p.title }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef>Precio</th>
+          <td mat-cell *matCell="let p">{{ p.price | currency }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Categoría</th>
+          <td mat-cell *matCell="let p">{{ p.category_slug }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCell="let p">
+            @if (p.is_sold) {
+              <span class="status-sold">Vendido</span>
+            } @else {
+              <span class="status-active">Activo</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCell="let p">
+            <button mat-icon-button color="primary" (click)="openEditForm(p)" [disabled]="isFormOpen()">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="onDelete(p.id)" [disabled]="isFormOpen()">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data" colspan="5">Aún no has publicado ningún producto.</td>
+        </tr>
+      </table>
+    }
+  </div>
+</div>

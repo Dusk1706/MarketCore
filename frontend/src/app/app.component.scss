@@ -1,0 +1,16 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+mat-toolbar {
+  span[routerLink] {
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.1rem;
+  }
+}
+
+main {
+  min-height: calc(100vh - 64px);
+  background-color: #fafafa;
+}

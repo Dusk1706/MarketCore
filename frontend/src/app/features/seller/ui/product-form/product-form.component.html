@@ -1,0 +1,70 @@
+<mat-card class="product-form-card">
+  @if (isLoading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+  
+  <mat-card-header>
+    <mat-card-title>{{ initialData() ? 'Editar Producto' : 'Publicar Nuevo Producto' }}</mat-card-title>
+    <mat-card-subtitle>Completa la información de tu artículo</mat-card-subtitle>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Título del Producto</mat-label>
+        <input matInput formControlName="title" placeholder="Ej. Bicicleta de montaña">
+        @if (productForm.controls.title.errors?.['required']) {
+          <mat-error>El título es obligatorio</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput formControlName="description" rows="4" placeholder="Describe el estado y características..."></textarea>
+        @if (productForm.controls.description.errors?.['required']) {
+          <mat-error>La descripción es obligatoria</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Precio</mat-label>
+          <input matInput type="number" formControlName="price">
+          <span matPrefix>$&nbsp;</span>
+          @if (productForm.controls.price.errors?.['required']) {
+            <mat-error>El precio es obligatorio</mat-error>
+          }
+          @if (productForm.controls.price.errors?.['min']) {
+            <mat-error>El precio no puede ser negativo</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categoría</mat-label>
+          <mat-select formControlName="category_slug">
+            @for (cat of categories(); track cat.id) {
+              <mat-option [value]="cat.slug">{{ cat.name }}</mat-option>
+            }
+          </mat-select>
+          @if (productForm.controls.category_slug.errors?.['required']) {
+            <mat-error>La categoría es obligatoria</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>URL de la Imagen</mat-label>
+        <input matInput formControlName="image_url" placeholder="https://ejemplo.com/imagen.jpg">
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="cancel.emit()" [disabled]="isLoading()">
+          CANCELAR
+        </button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="productForm.invalid || isLoading()">
+          {{ initialData() ? 'GUARDAR CAMBIOS' : 'PUBLICAR' }}
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
