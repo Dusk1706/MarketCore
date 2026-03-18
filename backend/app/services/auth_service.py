@@ -3,6 +3,7 @@ from app.repositories.user_repository import UserRepository
 from app.models.user import User
 from app.core.exceptions import AuthenticationError, ValidationError
 
+
 class AuthService:
     @staticmethod
     def register(email, password, name):
@@ -21,7 +22,4 @@ class AuthService:
             raise AuthenticationError("Invalid email or password")
 
         access_token = create_access_token(identity=str(user.id))
-        return {
-            "access_token": access_token,
-            "user": user.to_dict()
-        }
+        return {"access_token": access_token, "user": user.to_dict()}

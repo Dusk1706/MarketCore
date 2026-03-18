@@ -2,6 +2,7 @@ from typing import Optional
 from app.models.user import User
 from app.extensions import db
 
+
 class UserRepository:
     @staticmethod
     def get_by_email(email: str) -> Optional[User]:

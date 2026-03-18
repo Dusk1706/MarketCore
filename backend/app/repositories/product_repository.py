@@ -4,25 +4,27 @@ from app.models.product import Product
 from app.models.category import Category
 from app.extensions import db
 
+
 class ProductRepository:
     @staticmethod
-    def get_all(search: Optional[str] = None, 
-                category_slug: Optional[str] = None, 
-                min_price: Optional[float] = None, 
-                max_price: Optional[float] = None, 
-                seller_id: Optional[int] = None, 
-                page: int = 1, 
-                per_page: int = 10):
+    def get_all(
+        search: Optional[str] = None,
+        category_slug: Optional[str] = None,
+        min_price: Optional[float] = None,
+        max_price: Optional[float] = None,
+        seller_id: Optional[int] = None,
+        page: int = 1,
+        per_page: int = 10,
+    ):
         # Usamos joinedload para traer seller y category en el mismo query (Evita N+1)
         query = Product.query.options(
-            joinedload(Product.seller),
-            joinedload(Product.category)
+            joinedload(Product.seller), joinedload(Product.category)
         )
 
         if search:
             query = query.filter(
-                (Product.title.ilike(f"%{search}%")) |
-                (Product.description.ilike(f"%{search}%"))
+                (Product.title.ilike(f"%{search}%"))
+                | (Product.description.ilike(f"%{search}%"))
             )
 
         if category_slug:
@@ -37,7 +39,9 @@ class ProductRepository:
         if seller_id:
             query = query.filter(Product.user_id == seller_id)
 
-        return query.order_by(Product.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
+        return query.order_by(Product.created_at.desc()).paginate(
+            page=page, per_page=per_page, error_out=False
+        )
 
     @staticmethod
     def get_by_id(product_id: int) -> Optional[Product]:

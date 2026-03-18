@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
 from app.extensions import db
 
+
 class Product(db.Model):
-    __tablename__ = 'products'
+    __tablename__ = "products"
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
@@ -13,8 +14,8 @@ class Product(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Foreign Keys
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), nullable=False)
 
     def to_dict(self) -> dict:
         return {
@@ -26,5 +27,5 @@ class Product(db.Model):
             "is_sold": self.is_sold,
             "image_url": self.image_url,
             "created_at": self.created_at.isoformat(),
-            "seller": self.seller.to_dict()
+            "seller": self.seller.to_dict(),
         }

@@ -1,6 +1,8 @@
+import os
 import pytest
 from app import create_app
 from app.extensions import db
+
 
 @pytest.fixture
 def app():
@@ -8,7 +10,9 @@ def app():
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         "JWT_SECRET_KEY": "test-secret",
-        "RATELIMIT_ENABLED": False # Disable ratelimit for tests
+        "RATELIMIT_ENABLED": False,  # Disable ratelimit for tests
+        "SWAGGER_TEMPLATE_PATH": os.path.join(os.getcwd(), "docs/api/openapi.yaml"),
+        "UPLOAD_FOLDER": os.path.join(os.getcwd(), "test_uploads"),
     }
     app = create_app(test_config)
 
@@ -16,6 +20,7 @@ def app():
         db.create_all()
         yield app
         db.drop_all()
+
 
 @pytest.fixture
 def client(app):

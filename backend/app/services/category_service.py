@@ -1,5 +1,6 @@
 from app.repositories.category_repository import CategoryRepository
 
+
 class CategoryService:
     @staticmethod
     def get_categories():

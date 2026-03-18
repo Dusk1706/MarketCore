@@ -1,6 +1,7 @@
 from app.models.category import Category
 from app.extensions import db
 
+
 class CategoryRepository:
     @staticmethod
     def get_all():
