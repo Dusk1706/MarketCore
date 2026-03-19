@@ -19,8 +19,11 @@ def create_app(config_class=Config):
         "openapi": "3.0.3",
     }
 
-    # Path relative to backend root inside Docker
-    template_path = app.config.get("SWAGGER_TEMPLATE_PATH", "/docs/api/openapi.yaml")
+    # Prefer backend-local OpenAPI file to avoid coupling with external docs repos.
+    default_template_path = os.path.join(
+        os.path.dirname(app.root_path), "docs", "api", "openapi.yaml"
+    )
+    template_path = app.config.get("SWAGGER_TEMPLATE_PATH", default_template_path)
 
     swagger_config = {
         "headers": [],

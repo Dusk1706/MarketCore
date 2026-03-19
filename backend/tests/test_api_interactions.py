@@ -1,5 +1,4 @@
 import json
-import pytest
 
 def get_auth_header(client, email="test@example.com", name="Test User"):
     # Register

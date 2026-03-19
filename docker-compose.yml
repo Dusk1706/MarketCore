@@ -22,12 +22,11 @@ services:
       JWT_SECRET_KEY: dev_secret_key
       FLASK_APP: app:create_app
       FLASK_ENV: development
-      SWAGGER_TEMPLATE_PATH: /docs/api/openapi.yaml
+      SWAGGER_TEMPLATE_PATH: /app/docs/api/openapi.yaml
     ports:
       - "5000:5000"
     volumes:
       - ./backend:/app
-      - ./docs:/docs:ro
     depends_on:
       db:
         condition: service_healthy

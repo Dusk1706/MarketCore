@@ -1,4 +1,3 @@
-import pytest
 from app.models.interaction import Order, Review, Conversation, Message, OrderStatus
 from app.extensions import db
 
