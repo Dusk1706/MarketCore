@@ -75,6 +75,7 @@ def create_app(config_class=Config):
     from .api.v1.categories import categories_bp
     from .api.v1.users import users_bp
     from .api.v1.uploads import uploads_bp
+    from .api.v1.interactions import interactions_bp
 
     api_v1_bp = Blueprint("api_v1", __name__, url_prefix="/api/v1")
 
@@ -88,6 +89,7 @@ def create_app(config_class=Config):
     api_v1_bp.register_blueprint(categories_bp)
     api_v1_bp.register_blueprint(users_bp)
     api_v1_bp.register_blueprint(uploads_bp)
+    api_v1_bp.register_blueprint(interactions_bp)
 
     app.register_blueprint(api_v1_bp)
 
