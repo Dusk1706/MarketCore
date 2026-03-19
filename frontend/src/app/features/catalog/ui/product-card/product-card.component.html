@@ -1,27 +1,30 @@
 <mat-card class="product-card">
-  @if (product().image_url) {
-    <img mat-card-image [src]="product().image_url" [alt]="product().title">
-  } @else {
-    <div class="placeholder-img">Sin Imagen</div>
-  }
+  <div class="image-wrapper">
+    @if (product().image_url) {
+      <img mat-card-image [src]="product().image_url" [alt]="product().title">
+    } @else {
+      <div class="placeholder-img">
+        <mat-icon>image_not_supported</mat-icon>
+      </div>
+    }
+    
+    @if (product().is_sold) {
+      <div class="sold-badge">VENDIDO</div>
+    }
+  </div>
   
-  <mat-card-header>
-    <mat-card-title>{{ product().title }}</mat-card-title>
-    <mat-card-subtitle>{{ product().category_slug }}</mat-card-subtitle>
-  </mat-card-header>
-  
-  <mat-card-content>
-    <p class="description">{{ product().description }}</p>
+  <mat-card-content class="card-body">
+    <div class="meta-info">
+      <span class="category">{{ product().category_slug }}</span>
+    </div>
+    <mat-card-title class="title">{{ product().title }}</mat-card-title>
+    
     <div class="price">{{ product().price | currency }}</div>
   </mat-card-content>
   
-  <mat-card-actions align="end">
-    @if (product().is_sold) {
-      <mat-chip highlighted color="warn">Vendido</mat-chip>
-    } @else {
-      <button mat-flat-button color="primary">
-        Ver Detalles
-      </button>
-    }
+  <mat-card-actions class="card-actions">
+    <button mat-flat-button color="primary" [routerLink]="['/catalog/product', product().id]" class="action-btn">
+      Ver Detalles
+    </button>
   </mat-card-actions>
 </mat-card>

@@ -1,12 +1,17 @@
 <div class="catalog-container">
-  <header>
-    <h1>Catálogo de MarketCore</h1>
-    <app-search-bar (search)="onSearch($event)"></app-search-bar>
+  <header class="catalog-header">
+    <div class="header-title">
+      <h1>Descubre Productos</h1>
+      <p>Encuentra lo que buscas al mejor precio</p>
+    </div>
+    <div class="header-search">
+      <app-search-bar (search)="onSearch($event)"></app-search-bar>
+    </div>
   </header>
 
   @if (isLoading()) {
     <div class="spinner-container">
-      <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+      <mat-progress-spinner mode="indeterminate" color="primary" diameter="48"></mat-progress-spinner>
     </div>
   } @else {
     <div class="product-grid">
@@ -14,7 +19,9 @@
         <app-product-card [product]="product"></app-product-card>
       } @empty {
         <div class="no-results">
-          <p>No se encontraron productos que coincidan con tu búsqueda.</p>
+          <mat-icon>search_off</mat-icon>
+          <h3>No encontramos resultados</h3>
+          <p>Intenta con otros términos o elimina los filtros de búsqueda.</p>
         </div>
       }
     </div>

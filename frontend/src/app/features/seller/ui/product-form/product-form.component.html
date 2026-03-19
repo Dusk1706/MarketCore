@@ -1,41 +1,50 @@
-<mat-card class="product-form-card">
+<mat-card class="modern-form-card">
   @if (isLoading()) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar mode="indeterminate" class="form-progress"></mat-progress-bar>
   }
   
   <mat-card-header>
-    <mat-card-title>{{ initialData() ? 'Editar Producto' : 'Publicar Nuevo Producto' }}</mat-card-title>
-    <mat-card-subtitle>Completa la información de tu artículo</mat-card-subtitle>
+    <div class="header-icon">
+      <mat-icon color="primary">{{ initialData() ? 'edit' : 'add_box' }}</mat-icon>
+    </div>
+    <div>
+      <mat-card-title>{{ initialData() ? 'Editar Producto' : 'Publicar Nuevo Producto' }}</mat-card-title>
+      <mat-card-subtitle>Completa los detalles de tu artículo para el catálogo</mat-card-subtitle>
+    </div>
   </mat-card-header>
   
   <mat-card-content>
-    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
-      <mat-form-field appearance="outline">
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form-grid">
+      
+      <!-- Fila 1 -->
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Título del Producto</mat-label>
-        <input matInput formControlName="title" placeholder="Ej. Bicicleta de montaña">
+        <input matInput formControlName="title" placeholder="Ej. Bicicleta de montaña Specialized">
         @if (productForm.controls.title.errors?.['required']) {
           <mat-error>El título es obligatorio</mat-error>
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Descripción</mat-label>
-        <textarea matInput formControlName="description" rows="4" placeholder="Describe el estado y características..."></textarea>
+      <!-- Fila 2 -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descripción detallada</mat-label>
+        <textarea matInput formControlName="description" rows="5" placeholder="Describe el estado, marca, modelo y características importantes..."></textarea>
         @if (productForm.controls.description.errors?.['required']) {
           <mat-error>La descripción es obligatoria</mat-error>
         }
       </mat-form-field>
 
-      <div class="form-row">
+      <!-- Fila 3 -->
+      <div class="form-row-2">
         <mat-form-field appearance="outline">
           <mat-label>Precio</mat-label>
-          <input matInput type="number" formControlName="price">
-          <span matPrefix>$&nbsp;</span>
+          <input matInput type="number" formControlName="price" placeholder="0.00">
+          <span matTextPrefix>$&nbsp;</span>
           @if (productForm.controls.price.errors?.['required']) {
-            <mat-error>El precio es obligatorio</mat-error>
+            <mat-error>Requerido</mat-error>
           }
           @if (productForm.controls.price.errors?.['min']) {
-            <mat-error>El precio no puede ser negativo</mat-error>
+            <mat-error>No negativo</mat-error>
           }
         </mat-form-field>
 
@@ -47,24 +56,30 @@
             }
           </mat-select>
           @if (productForm.controls.category_slug.errors?.['required']) {
-            <mat-error>La categoría es obligatoria</mat-error>
+            <mat-error>Selecciona una categoría</mat-error>
           }
         </mat-form-field>
       </div>
 
-      <mat-form-field appearance="outline">
+      <!-- Fila 4 -->
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>URL de la Imagen</mat-label>
+        <mat-icon matPrefix color="primary" class="prefix-icon">link</mat-icon>
         <input matInput formControlName="image_url" placeholder="https://ejemplo.com/imagen.jpg">
       </mat-form-field>
 
-      <div class="form-actions">
-        <button mat-button type="button" (click)="cancel.emit()" [disabled]="isLoading()">
-          CANCELAR
-        </button>
-        <button mat-flat-button color="primary" type="submit" [disabled]="productForm.invalid || isLoading()">
-          {{ initialData() ? 'GUARDAR CAMBIOS' : 'PUBLICAR' }}
-        </button>
-      </div>
     </form>
   </mat-card-content>
+
+  <mat-divider></mat-divider>
+
+  <mat-card-actions class="form-actions">
+    <button mat-button type="button" (click)="cancel.emit()" [disabled]="isLoading()">
+      CANCELAR
+    </button>
+    <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="productForm.invalid || isLoading()">
+      <mat-icon>{{ initialData() ? 'save' : 'publish' }}</mat-icon>
+      {{ initialData() ? 'GUARDAR CAMBIOS' : 'PUBLICAR PRODUCTO' }}
+    </button>
+  </mat-card-actions>
 </mat-card>

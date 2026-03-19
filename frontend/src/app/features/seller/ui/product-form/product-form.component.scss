@@ -2,45 +2,121 @@
   display: block;
 }
 
-.product-form-card {
-  max-width: 600px;
+.modern-form-card {
+  max-width: 800px;
   margin: 0 auto;
-  
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+
+  .form-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  }
+
   mat-card-header {
-    margin-bottom: 2rem;
-    padding-top: 1rem;
+    background-color: #f8fafc;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .header-icon {
+      background-color: #ede9fe;
+      border-radius: 8px;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      mat-icon {
+        color: #7c3aed;
+      }
+    }
+
+    mat-card-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 0.25rem;
+    }
+    
+    mat-card-subtitle {
+      color: #64748b;
+      margin: 0;
+    }
+  }
+
+  mat-card-content {
+    padding: 2rem !important;
   }
 }
 
-.product-form {
+.product-form-grid {
+  display: grid;
+  gap: 1.5rem;
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  // Customizar campos M3
+  ::ng-deep .mdc-text-field--outlined {
+    background-color: #f8fafc;
+  }
+  
+  .prefix-icon {
+    margin-right: 8px;
+    color: #64748b;
+  }
+}
+
+.form-actions {
   display: flex;
-  flex-direction: column;
+  justify-content: flex-end;
   gap: 1rem;
-  
-  mat-form-field {
-    width: 100%;
-  }
-  
-  .form-row {
-    display: flex;
-    gap: 1rem;
+  padding: 1.5rem 2rem !important;
+  background-color: #f8fafc;
+
+  button {
+    padding: 0 1.5rem;
+    height: 44px;
+    font-weight: 600;
     
-    mat-form-field {
-      flex: 1;
+    mat-icon {
+      margin-right: 8px;
     }
-  }
-  
-  .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1rem;
   }
 }
 
 @media screen and (max-width: 600px) {
-  .form-row {
-    flex-direction: column;
-    gap: 0 !important;
+  .product-form-grid .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .modern-form-card mat-card-header {
+    padding: 1rem;
+  }
+  
+  .modern-form-card mat-card-content {
+    padding: 1rem !important;
+  }
+  
+  .form-actions {
+    padding: 1rem !important;
+    flex-direction: column-reverse;
+    
+    button { width: 100%; }
   }
 }

@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, map, of, switchMap, tap } from 'rxjs';
 
@@ -16,7 +17,8 @@ import { SearchBarComponent } from '../../ui/search-bar/search-bar.component';
   imports: [
     CommonModule, 
     MatProgressSpinnerModule, 
-    MatSnackBarModule, 
+    MatSnackBarModule,
+    MatIconModule,
     ProductCardComponent, 
     SearchBarComponent
   ],

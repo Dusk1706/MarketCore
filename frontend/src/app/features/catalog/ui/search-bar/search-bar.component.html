@@ -1,5 +1,9 @@
-<mat-form-field appearance="outline" class="search-field">
-  <mat-label>Buscar productos...</mat-label>
-  <input matInput [formControl]="searchControl">
-  <mat-icon matSuffix>search</mat-icon>
+<mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
+  <mat-icon matPrefix color="primary">search</mat-icon>
+  <input matInput [formControl]="searchControl" placeholder="¿Qué estás buscando?">
+  @if (searchControl.value) {
+    <button mat-icon-button matSuffix (click)="searchControl.setValue('')" aria-label="Limpiar búsqueda">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
 </mat-form-field>
