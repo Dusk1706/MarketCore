@@ -16,9 +16,9 @@ export class MessagesService {
         return this.http.get<Conversation[]>('/api/v1/conversations');
     }
     conversationsIdMessagesGet(id: number): Observable<Message[]> {
-        return this.http.get<Message[]>(/api/v1/conversations//messages);
+        return this.http.get<Message[]>(`/api/v1/conversations/${id}/messages`);
     }
     conversationsIdMessagesPost(id: number, body: MessageCreate): Observable<Message> {
-        return this.http.post<Message>(/api/v1/conversations//messages, body);
+        return this.http.post<Message>(`/api/v1/conversations/${id}/messages`, body);
     }
 }

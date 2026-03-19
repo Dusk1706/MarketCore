@@ -8,9 +8,9 @@ import { UserReviewsResponse } from '../model/userReviewsResponse';
 export class ReviewsService {
     constructor(private http: HttpClient) {}
     ordersIdReviewsPost(id: number, body: ReviewCreate): Observable<any> {
-        return this.http.post<any>(/api/v1/orders//reviews, body);
+        return this.http.post<any>(`/api/v1/orders/${id}/reviews`, body);
     }
     usersIdReviewsGet(id: number): Observable<UserReviewsResponse> {
-        return this.http.get<UserReviewsResponse>(/api/v1/users//reviews);
+        return this.http.get<UserReviewsResponse>(`/api/v1/users/${id}/reviews`);
     }
 }
