@@ -9,13 +9,16 @@ class OrderSchema(Schema):
     seller_id = fields.Int(dump_only=True)
     product_id = fields.Int(dump_only=True)
     total_amount = fields.Float(dump_only=True)
-    status = fields.Str(dump_only=True)
+    status = fields.Method("get_status", dump_only=True)
     payment_gateway_id = fields.Str(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
     
     buyer = fields.Nested(UserSchema, dump_only=True)
     seller = fields.Nested(UserSchema, dump_only=True)
     product = fields.Nested(ProductSchema, dump_only=True)
+
+    def get_status(self, obj):
+        return obj.status.name if obj.status else None
 
 
 class OrderCreateSchema(Schema):
