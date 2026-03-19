@@ -1,0 +1,65 @@
+<div class="detail-container">
+  @if (isLoading()) {
+    <div class="spinner-container">
+      <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+    </div>
+  } @else {
+    @if (product(); as p) {
+      <button mat-button routerLink="/catalog" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+        Volver al Catálogo
+      </button>
+
+      <div class="product-grid">
+        <div class="image-section">
+          @if (p.image_url) {
+            <img [src]="p.image_url" [alt]="p.title">
+          } @else {
+            <div class="placeholder-img">Sin Imagen</div>
+          }
+        </div>
+
+        <div class="info-section">
+          <div class="header">
+            <mat-chip-listbox>
+              @if (p.category_slug) {
+                <mat-chip>{{ p.category_slug }}</mat-chip>
+              }
+              @if (p.is_sold) {
+                <mat-chip highlighted color="warn">Vendido</mat-chip>
+              }
+            </mat-chip-listbox>
+            <h1>{{ p.title }}</h1>
+            <p class="price">{{ p.price | currency }}</p>
+          </div>
+
+          <div class="seller-info">
+            <mat-icon>person</mat-icon>
+            <span>Vendedor: <strong>{{ p.seller?.name || 'Usuario Anónimo' }}</strong></span>
+          </div>
+
+          <div class="description-section">
+            <h3>Descripción</h3>
+            <p>{{ p.description }}</p>
+          </div>
+
+          <div class="actions">
+            <button mat-raised-button color="primary" class="buy-button" (click)="onBuy()" [disabled]="p.is_sold">
+              <mat-icon>shopping_cart</mat-icon>
+              COMPRAR AHORA
+            </button>
+            <button mat-stroked-button color="accent" class="contact-button">
+              <mat-icon>chat</mat-icon>
+              Contactar Vendedor
+            </button>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="no-results">
+        <p>No se encontró el producto.</p>
+        <button mat-button routerLink="/catalog">Volver al catálogo</button>
+      </div>
+    }
+  }
+</div>
