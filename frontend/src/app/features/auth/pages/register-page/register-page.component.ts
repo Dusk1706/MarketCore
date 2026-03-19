@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../../../core/services/auth.service';
 import { RegisterFormComponent } from '../../ui/register-form/register-form.component';
@@ -9,7 +9,7 @@ import { UserRegister } from '../../../../core/api/model/models';
 @Component({
   selector: 'app-register-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatSnackBarModule, RegisterFormComponent],
+  imports: [CommonModule, MatSnackBarModule, RegisterFormComponent],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

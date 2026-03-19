@@ -1,11 +1,13 @@
-import { Component, ChangeDetectionStrategy, output, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, output, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatIconModule } from '@angular/material/icon';
 import { UserRegister } from '../../../../core/api/model/models';
 
 @Component({
@@ -13,12 +15,14 @@ import { UserRegister } from '../../../../core/api/model/models';
   standalone: true,
   imports: [
     CommonModule, 
+    RouterLink,
     ReactiveFormsModule, 
     MatFormFieldModule, 
     MatInputModule, 
     MatButtonModule, 
     MatCardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatIconModule
   ],
   templateUrl: './register-form.component.html',
   styleUrl: './register-form.component.scss',
@@ -27,6 +31,7 @@ import { UserRegister } from '../../../../core/api/model/models';
 export class RegisterFormComponent {
   isLoading = input<boolean>(false);
   register = output<UserRegister>();
+  hidePassword = signal(true);
 
   registerForm = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -38,5 +43,9 @@ export class RegisterFormComponent {
     if (this.registerForm.valid) {
       this.register.emit(this.registerForm.getRawValue());
     }
+  }
+
+  togglePasswordVisibility() {
+    this.hidePassword.set(!this.hidePassword());
   }
 }

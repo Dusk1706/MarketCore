@@ -1,40 +1,70 @@
-<mat-card class="login-card">
-  @if (isLoading()) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  }
-  
-  <mat-card-header>
-    <mat-card-title>Iniciar Sesión en MarketCore</mat-card-title>
-    <mat-card-subtitle>Ingresa tus credenciales para continuar</mat-card-subtitle>
-  </mat-card-header>
-  
-  <mat-card-content>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <mat-form-field appearance="outline">
-        <mat-label>Correo Electrónico</mat-label>
-        <input matInput type="email" formControlName="email" placeholder="correo@ejemplo.com">
-        @if (loginForm.controls.email.errors?.['required']) {
-          <mat-error>El correo es obligatorio</mat-error>
-        }
-        @if (loginForm.controls.email.errors?.['email']) {
-          <mat-error>Formato de correo inválido</mat-error>
-        }
-      </mat-form-field>
+<div class="login-container">
+  <div class="background-mesh" aria-hidden="true"></div>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Contraseña</mat-label>
-        <input matInput type="password" formControlName="password">
-        @if (loginForm.controls.password.errors?.['required']) {
-          <mat-error>La contraseña es obligatoria</mat-error>
-        }
-        @if (loginForm.controls.password.errors?.['minlength']) {
-          <mat-error>La contraseña debe tener al menos 8 caracteres</mat-error>
-        }
-      </mat-form-field>
+  <mat-card class="login-card">
+    @if (isLoading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
 
-      <button mat-flat-button color="primary" type="submit" [disabled]="loginForm.invalid || isLoading()">
-        INGRESAR
-      </button>
-    </form>
-  </mat-card-content>
-</mat-card>
+    <div class="login-header">
+      <div class="logo-area">
+        <mat-icon color="primary">storefront</mat-icon>
+      </div>
+      <h1>Bienvenido de nuevo</h1>
+      <p>Ingresa tus credenciales para acceder a tu panel.</p>
+    </div>
+
+    <mat-card-content>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Correo Electrónico</mat-label>
+          <input matInput formControlName="email" placeholder="ejemplo@correo.com" type="email">
+          <mat-icon matSuffix>email</mat-icon>
+          @if (loginForm.controls.email.errors?.['required'] && loginForm.controls.email.touched) {
+            <mat-error>El correo es obligatorio</mat-error>
+          }
+          @if (loginForm.controls.email.errors?.['email'] && loginForm.controls.email.touched) {
+            <mat-error>Formato de correo inválido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password">
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            aria-label="Mostrar u ocultar contraseña"
+            (click)="togglePasswordVisibility()">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (loginForm.controls.password.errors?.['required'] && loginForm.controls.password.touched) {
+            <mat-error>La contraseña es obligatoria</mat-error>
+          }
+          @if (loginForm.controls.password.errors?.['minlength'] && loginForm.controls.password.touched) {
+            <mat-error>La contraseña debe tener al menos 8 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="form-options">
+          <mat-checkbox color="primary">Recordarme</mat-checkbox>
+          <a href="#" class="forgot-link" (click)="$event.preventDefault()">Olvidé mi contraseña</a>
+        </div>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="submit-btn"
+          type="submit"
+          [disabled]="loginForm.invalid || isLoading()">
+          INGRESAR AL PANEL
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-footer class="login-footer">
+      <p>¿No tienes una cuenta? <a routerLink="/auth/register">Regístrate aquí</a></p>
+    </mat-card-footer>
+  </mat-card>
+</div>

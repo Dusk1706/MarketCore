@@ -1,11 +1,14 @@
-import { Component, ChangeDetectionStrategy, output, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, output, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { UserLogin } from '../../../../core/api/model/models';
 
 @Component({
@@ -14,11 +17,14 @@ import { UserLogin } from '../../../../core/api/model/models';
   imports: [
     CommonModule, 
     ReactiveFormsModule, 
+    RouterLink,
     MatFormFieldModule, 
     MatInputModule, 
     MatButtonModule, 
     MatCardModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatIconModule,
+    MatCheckboxModule
   ],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss',
@@ -27,6 +33,7 @@ import { UserLogin } from '../../../../core/api/model/models';
 export class LoginFormComponent {
   isLoading = input<boolean>(false);
   login = output<UserLogin>();
+  hidePassword = signal(true);
 
   loginForm = new FormGroup({
     email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
@@ -37,5 +44,9 @@ export class LoginFormComponent {
     if (this.loginForm.valid) {
       this.login.emit(this.loginForm.getRawValue());
     }
+  }
+
+  togglePasswordVisibility() {
+    this.hidePassword.set(!this.hidePassword());
   }
 }

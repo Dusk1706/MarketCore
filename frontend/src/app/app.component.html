@@ -1,4 +1,4 @@
-<mat-toolbar class="main-toolbar">
+<mat-toolbar class="main-toolbar" [class.navbar-transparent]="isAuthRoute()">
   <div class="toolbar-content">
     <div class="brand" routerLink="/">
       <mat-icon color="primary">storefront</mat-icon>
@@ -42,6 +42,6 @@
   </div>
 </mat-toolbar>
 
-<main class="main-content">
+<main class="main-content" [class.auth-surface]="isAuthRoute()">
   <router-outlet></router-outlet>
 </main>
