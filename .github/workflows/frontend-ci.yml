@@ -41,7 +41,7 @@ jobs:
       - name: Run unit tests (headless)
         env:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
-        run: npm test -- --watch=false --browsers=ChromeHeadless
+        run: npm test -- --watch=false --browsers=ChromeHeadlessNoSandbox
 
       - name: Build production bundle
         run: npm run build -- --configuration production
