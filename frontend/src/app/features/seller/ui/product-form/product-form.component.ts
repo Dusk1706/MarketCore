@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, output, input, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,50 +30,70 @@ import { ProductCreate, ProductUpdate, Category } from '../../../../core/api/mod
   styleUrl: './product-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductFormComponent implements OnInit {
+export class ProductFormComponent {
+  private fb = inject(NonNullableFormBuilder);
+
   categories = input.required<Category[]>();
   initialData = input<ProductUpdate | null>(null);
   isLoading = input<boolean>(false);
+  isUploading = input<boolean>(false);
   
   save = output<ProductCreate | ProductUpdate>();
   cancel = output<void>();
+  uploadFile = output<File>();
 
-  imagePreview: string | null = null;
+  imagePreview = signal<string | null>(null);
 
-  productForm = new FormGroup({
-    title: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    description: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    price: new FormControl<number>(0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
-    category_slug: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    image_url: new FormControl('', { nonNullable: true }),
-    is_sold: new FormControl(false, { nonNullable: true })
+  productForm = this.fb.group({
+    title: this.fb.control('', { validators: [Validators.required, Validators.minLength(5)] }),
+    description: this.fb.control('', { validators: [Validators.required] }),
+    price: this.fb.control(0, { validators: [Validators.required, Validators.min(0)] }),
+    category_slug: this.fb.control('', { validators: [Validators.required] }),
+    image_url: this.fb.control(''),
+    is_sold: this.fb.control(false)
   });
 
-  ngOnInit() {
-    const data = this.initialData();
-    if (data) {
-      this.productForm.patchValue(data);
-      if (data.image_url) {
-        this.imagePreview = data.image_url;
-      }
-    }
+  constructor() {
+    effect(() => {
+      const data = this.initialData();
+
+      untracked(() => {
+        if (data) {
+          this.productForm.patchValue(data);
+          this.imagePreview.set(data.image_url || null);
+          return;
+        }
+
+        this.productForm.reset({
+          title: '',
+          description: '',
+          price: 0,
+          category_slug: '',
+          image_url: '',
+          is_sold: false
+        });
+        this.imagePreview.set(null);
+      });
+    });
+  }
+
+  updateImageUrl(url: string) {
+    this.productForm.controls.image_url.setValue(url);
+    this.imagePreview.set(url);
   }
 
   onFileSelected(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        const base64String = reader.result as string;
-        this.imagePreview = base64String;
-        this.productForm.controls.image_url.setValue(base64String);
-      };
+      reader.onload = () => this.imagePreview.set(reader.result as string);
       reader.readAsDataURL(file);
+      this.uploadFile.emit(file);
     }
   }
 
   removeImage() {
-    this.imagePreview = null;
+    this.imagePreview.set(null);
     this.productForm.controls.image_url.setValue('');
   }
 

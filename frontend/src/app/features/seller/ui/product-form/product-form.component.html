@@ -64,8 +64,12 @@
       <!-- Fila 4: Subida de Imagen -->
       <div class="image-upload-section full-width">
         <label class="upload-label">Fotografía del Producto</label>
+
+        @if (isUploading()) {
+          <mat-progress-bar mode="indeterminate" class="form-progress"></mat-progress-bar>
+        }
         
-        @if (!imagePreview) {
+        @if (!imagePreview()) {
           <div class="upload-area" (click)="fileInput.click()">
             <mat-icon>add_photo_alternate</mat-icon>
             <p>Haz clic para subir una imagen</p>
@@ -73,7 +77,7 @@
           </div>
         } @else {
           <div class="image-preview-container">
-            <img [src]="imagePreview" alt="Vista previa del producto">
+            <img [src]="imagePreview()" alt="Vista previa del producto">
             <button mat-mini-fab color="warn" class="remove-btn" type="button" (click)="removeImage()" matTooltip="Eliminar imagen">
               <mat-icon>delete</mat-icon>
             </button>
@@ -93,7 +97,7 @@
     <button mat-button type="button" (click)="cancel.emit()" [disabled]="isLoading()">
       CANCELAR
     </button>
-    <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="productForm.invalid || isLoading()">
+    <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="productForm.invalid || isLoading() || isUploading()">
       <mat-icon>{{ initialData() ? 'save' : 'publish' }}</mat-icon>
       {{ initialData() ? 'GUARDAR CAMBIOS' : 'PUBLICAR PRODUCTO' }}
     </button>
