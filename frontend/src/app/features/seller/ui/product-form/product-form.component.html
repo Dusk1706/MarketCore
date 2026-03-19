@@ -17,7 +17,7 @@
     <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form-grid">
       
       <!-- Fila 1 -->
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
         <mat-label>Título del Producto</mat-label>
         <input matInput formControlName="title" placeholder="Ej. Bicicleta de montaña Specialized">
         @if (productForm.controls.title.errors?.['required']) {
@@ -26,9 +26,9 @@
       </mat-form-field>
 
       <!-- Fila 2 -->
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
         <mat-label>Descripción detallada</mat-label>
-        <textarea matInput formControlName="description" rows="5" placeholder="Describe el estado, marca, modelo y características importantes..."></textarea>
+        <textarea matInput formControlName="description" rows="4" placeholder="Describe el estado, marca, modelo y características importantes..."></textarea>
         @if (productForm.controls.description.errors?.['required']) {
           <mat-error>La descripción es obligatoria</mat-error>
         }
@@ -36,7 +36,7 @@
 
       <!-- Fila 3 -->
       <div class="form-row-2">
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Precio</mat-label>
           <input matInput type="number" formControlName="price" placeholder="0.00">
           <span matTextPrefix>$&nbsp;</span>
@@ -48,7 +48,7 @@
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Categoría</mat-label>
           <mat-select formControlName="category_slug">
             @for (cat of categories(); track cat.id) {
@@ -62,7 +62,7 @@
       </div>
 
       <!-- Fila 4 -->
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
         <mat-label>URL de la Imagen</mat-label>
         <mat-icon matPrefix color="primary" class="prefix-icon">link</mat-icon>
         <input matInput formControlName="image_url" placeholder="https://ejemplo.com/imagen.jpg">
