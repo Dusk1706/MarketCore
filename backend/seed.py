@@ -55,42 +55,50 @@ def seed_all():
             "description": "Excelente estado, color grafito. Incluye cargador original.",
             "price": 750.00,
             "category_slug": "tecnologia",
-            "image_url": "https://picsum.photos/seed/iphone/600/400",
+            "image_url": "https://images.unsplash.com/photo-1592286927505-1def25115558?auto=format&fit=crop&w=1200&q=80",
         },
         {
             "title": "Sofá Cama Gris",
             "description": "Casi nuevo, 3 plazas, muy cómodo para visitas.",
             "price": 250.00,
             "category_slug": "hogar",
-            "image_url": "https://picsum.photos/seed/sofa/600/400",
+            "image_url": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80",
         },
         {
             "title": "Bicicleta de Montaña R29",
             "description": "Frenos de disco, 21 velocidades. Ideal para senderismo.",
             "price": 320.00,
             "category_slug": "deportes",
-            "image_url": "https://picsum.photos/seed/bike/600/400",
+            "image_url": "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=1200&q=80",
         },
         {
             "title": "Chaqueta de Cuero Vintage",
             "description": "Talla M, estilo clásico de los 90. Cuero auténtico.",
             "price": 85.00,
             "category_slug": "ropa",
-            "image_url": "https://picsum.photos/seed/jacket/600/400",
+            "image_url": "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=1200&q=80",
         },
         {
             "title": "Set de Libros: El Hobbit",
             "description": "Edición de colección, tapa dura. Nuevos.",
             "price": 45.00,
             "category_slug": "libros",
-            "image_url": "https://picsum.photos/seed/books/600/400",
+            "image_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=80",
         },
     ]
 
     for p_data in products_data:
-        exists = Product.query.filter_by(title=p_data["title"]).first()
-        if not exists:
-            cat = categories[p_data["category_slug"]]
+        existing = Product.query.filter_by(title=p_data["title"]).first()
+        cat = categories[p_data["category_slug"]]
+
+        if existing:
+            # Keep seed data consistent across reruns (including image changes).
+            existing.description = p_data["description"]
+            existing.price = p_data["price"]
+            existing.image_url = p_data["image_url"]
+            existing.category_id = cat.id
+            existing.user_id = users[0].id
+        else:
             product = Product(
                 title=p_data["title"],
                 description=p_data["description"],
