@@ -5,13 +5,15 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 
 import { routes } from './app.routes';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { BASE_PATH } from './core/api/variables';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes), 
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptors([jwtInterceptor])),
+    // Registramos ambos interceptores. El orden importa: primero añade el token, luego maneja errores
+    provideHttpClient(withInterceptors([jwtInterceptor, errorInterceptor])),
     { provide: BASE_PATH, useValue: '/api/v1' } // Se comunica a través del proxy de Nginx en Docker
   ]
 };
