@@ -15,7 +15,7 @@ def test_register_user(client):
     )
 
     assert response.status_code == 201
-    assert b"User created successfully" in response.data
+    assert b"User created. Please check your email to verify your account." in response.data
 
 
 def test_login_user(client):
