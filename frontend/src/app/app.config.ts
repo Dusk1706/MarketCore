@@ -12,6 +12,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes), 
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([jwtInterceptor])),
-    { provide: BASE_PATH, useValue: 'http://localhost:5000/api/v1' }
+    { provide: BASE_PATH, useValue: '/api/v1' } // Se comunica a través del proxy de Nginx en Docker
   ]
 };

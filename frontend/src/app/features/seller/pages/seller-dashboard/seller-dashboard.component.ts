@@ -53,8 +53,10 @@ export class SellerDashboardComponent implements OnInit {
     
     // Load seller's products
     this.productsApi.productsGet(undefined, undefined, undefined, undefined, true).subscribe({
-      next: (products) => {
-        this.products.set(products);
+      next: (response: any) => {
+        // Manejar la estructura paginada del backend: { meta: {...}, products: [...] }
+        const items = response.products ? response.products : response;
+        this.products.set(items);
         this.isLoading.set(false);
       },
       error: () => {

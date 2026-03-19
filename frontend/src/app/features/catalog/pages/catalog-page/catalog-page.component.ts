@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { catchError, of, switchMap, tap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 
 import { ProductsService } from '../../../../core/api/api/products.service';
 import { Product } from '../../../../core/api/model/models';
@@ -37,6 +37,11 @@ export class CatalogPageComponent {
       tap(() => this.isLoading.set(true)),
       switchMap(query => 
         this.productsApi.productsGet(query).pipe(
+          map((response: any) => {
+            // El backend devuelve paginación: { meta: {...}, products: [...] }
+            // Extraemos el array para el frontend
+            return response.products ? response.products : response; 
+          }),
           catchError(err => {
             this.snackBar.open('Error al cargar productos', 'Cerrar', { duration: 3000 });
             return of([] as Product[]);
