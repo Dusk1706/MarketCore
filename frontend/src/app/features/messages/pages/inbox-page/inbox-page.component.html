@@ -1,0 +1,73 @@
+<section class="inbox-page">
+  <aside class="conversations-panel">
+    <h2>Inbox</h2>
+
+    @if (loadingConversations()) {
+      <div class="center-state">
+        <mat-spinner diameter="32"></mat-spinner>
+      </div>
+    } @else {
+      @if (conversations().length === 0) {
+        <div class="center-state empty">Aun no tienes conversaciones.</div>
+      } @else {
+        <mat-nav-list>
+          @for (conversation of conversations(); track conversation.id) {
+            <a
+              mat-list-item
+              href="javascript:void(0)"
+              [class.active]="selectedConversation()?.id === conversation.id"
+              (click)="selectConversation(conversation)">
+              <span matListItemTitle>{{ conversationTitle(conversation) }}</span>
+              <span matListItemLine>Conversacion #{{ conversation.id }}</span>
+            </a>
+          }
+        </mat-nav-list>
+      }
+    }
+  </aside>
+
+  <section class="thread-panel">
+    @if (!selectedConversation()) {
+      <div class="center-state">Selecciona una conversacion para ver el hilo.</div>
+    } @else {
+      @if (selectedConversation(); as activeConversation) {
+      <header class="thread-header">
+        <h3>{{ conversationTitle(activeConversation) }}</h3>
+      </header>
+
+      @if (loadingMessages()) {
+        <div class="center-state">
+          <mat-spinner diameter="32"></mat-spinner>
+        </div>
+      } @else {
+        <div class="messages-list">
+          @for (message of messages(); track message.id) {
+            <article class="message" [class.own]="isOwnMessage(message)">
+              <p>{{ message.content }}</p>
+            </article>
+          }
+
+          @if (messages().length === 0) {
+            <div class="center-state empty">Aun no hay mensajes en esta conversacion.</div>
+          }
+        </div>
+      }
+
+      <form class="reply-form" (ngSubmit)="sendReply()">
+        <mat-form-field appearance="outline" class="reply-input">
+          <mat-label>Escribe tu respuesta</mat-label>
+          <textarea matInput rows="3" [formControl]="replyControl"></textarea>
+          @if (replyControl.hasError('required') && replyControl.touched) {
+            <mat-error>El mensaje es obligatorio.</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" type="submit" [disabled]="sending()">
+          <mat-icon>send</mat-icon>
+          Enviar
+        </button>
+      </form>
+      }
+    }
+  </section>
+</section>

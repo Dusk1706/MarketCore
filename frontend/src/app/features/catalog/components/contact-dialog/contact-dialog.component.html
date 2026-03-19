@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Contactar vendedor</h2>
+
+<mat-dialog-content>
+  <p class="dialog-subtitle">Producto: {{ data.productTitle }}</p>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Escribe tu mensaje</mat-label>
+    <textarea matInput rows="5" [formControl]="contentControl" maxlength="5000"></textarea>
+    <mat-hint align="end">{{ contentControl.value.length }}/5000</mat-hint>
+    @if (contentControl.hasError('required') && contentControl.touched) {
+      <mat-error>El mensaje es obligatorio.</mat-error>
+    }
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="send()">Enviar</button>
+</mat-dialog-actions>

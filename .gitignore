@@ -1,1 +1,12 @@
 .worktrees/
+
+# Dependency directories
+/node_modules/
+
+# Local env files
+.env
+.env.*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

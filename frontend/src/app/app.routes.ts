@@ -27,5 +27,10 @@ export const routes: Routes = [
     path: 'seller',
     canActivate: [authGuard],
     loadComponent: () => import('./features/seller/pages/seller-dashboard/seller-dashboard.component').then(m => m.SellerDashboardComponent)
+  },
+  {
+    path: 'inbox',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/messages/pages/inbox-page/inbox-page.component').then(m => m.InboxPageComponent)
   }
 ];

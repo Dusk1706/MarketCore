@@ -12,6 +12,7 @@
       
       @if (authService.isAuthenticated()) {
         <button mat-button routerLink="/seller">Vender</button>
+        <button mat-button routerLink="/inbox">Inbox</button>
         
         <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-btn" aria-label="Menú de usuario">
           <mat-icon>account_circle</mat-icon>

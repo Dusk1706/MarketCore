@@ -50,12 +50,10 @@
             
             <!-- Señales de Confianza: Calificaciones -->
             <div class="rating-stars">
-              <mat-icon class="star filled">star</mat-icon>
-              <mat-icon class="star filled">star</mat-icon>
-              <mat-icon class="star filled">star</mat-icon>
-              <mat-icon class="star filled">star</mat-icon>
-              <mat-icon class="star half">star_half</mat-icon>
-              <span class="rating-text">4.5 (84 reseñas)</span>
+              @for (star of ratingStars(); track $index) {
+                <mat-icon class="star" [class.filled]="star !== 'star_border'">{{ star }}</mat-icon>
+              }
+              <span class="rating-text">{{ averageRating() | number:'1.1-1' }} ({{ totalReviews() }} reseñas)</span>
             </div>
             
             <p class="price">{{ p.price | currency }}</p>
@@ -74,7 +72,7 @@
             <div class="seller-details">
               <span class="seller-label">Vendido por:</span>
               <a href="javascript:void(0)" class="seller-name">{{ p.seller?.name || 'Usuario Anónimo' }}</a>
-              <span class="seller-rating">⭐ 4.8 (120 ventas exitosas)</span>
+              <span class="seller-rating">⭐ {{ averageRating() | number:'1.1-1' }} ({{ totalSales() }} ventas exitosas)</span>
             </div>
           </div>
 
@@ -97,7 +95,7 @@
               </button>
               
               <!-- Botón secundario armonizado (Outline) -->
-              <button mat-stroked-button color="primary" class="contact-button">
+              <button mat-stroked-button color="primary" class="contact-button" (click)="onContactSeller()">
                 <mat-icon>chat</mat-icon>
                 <span>Contactar Vendedor</span>
               </button>
