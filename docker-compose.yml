@@ -1,4 +1,15 @@
 services:
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   db:
     image: postgres:16-alpine
     restart: always
@@ -17,11 +28,14 @@ services:
   backend:
     build: ./backend
     restart: always
+    command: sh -c "flask db upgrade && python seed.py && gunicorn --bind 0.0.0.0:5000 --workers 2 --threads 4 --timeout 120 wsgi:app"
     environment:
       DATABASE_URL: postgresql://marketcore:marketcore_pass@db:5432/marketcore_db
       JWT_SECRET_KEY: dev_secret_key
-      FLASK_APP: app:create_app
-      FLASK_ENV: development
+      MAX_CONTENT_LENGTH_MB: 20
+      RATELIMIT_STORAGE_URI: redis://redis:6379/0
+      FLASK_APP: wsgi:app
+      FLASK_ENV: production
       SWAGGER_TEMPLATE_PATH: /app/docs/api/openapi.yaml
     ports:
       - "5000:5000"
@@ -29,6 +43,8 @@ services:
       - ./backend:/app
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   frontend:

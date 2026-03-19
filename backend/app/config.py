@@ -18,4 +18,6 @@ class Config:
         "SWAGGER_TEMPLATE_PATH", os.path.join(BASE_DIR, "docs", "api", "openapi.yaml")
     )
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", os.path.join(os.getcwd(), "uploads"))
-    MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB limit
+    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH_MB", "20")) * 1024 * 1024
+    # Explicit limiter storage avoids Flask-Limiter's implicit in-memory warning.
+    RATELIMIT_STORAGE_URI = os.getenv("RATELIMIT_STORAGE_URI", "memory://")
