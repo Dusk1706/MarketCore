@@ -20,5 +20,9 @@ export interface Product {
     image_url?: string;
     created_at?: string;
     seller?: ProductSeller;
+    trust_signals?: {
+        average_rating?: number;
+        total_sales?: number;
+    };
 }
 
