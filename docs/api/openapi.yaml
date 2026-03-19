@@ -1,0 +1,266 @@
+openapi: 3.0.3
+info:
+  title: MarketCore API
+  description: API para el marketplace de compra/venta de artículos usados.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Servidor de Desarrollo
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Registro de nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+        '400':
+          description: Datos inválidos o usuario ya existe
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Inicio de sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '401':
+          description: Credenciales incorrectas
+
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: Listar todas las categorías disponibles
+      responses:
+        '200':
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Listar productos con filtros
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: category_slug
+          in: query
+          schema:
+            type: string
+        - name: min_price
+          in: query
+          schema:
+            type: number
+        - name: max_price
+          in: query
+          schema:
+            type: number
+        - name: seller_only
+          in: query
+          description: Si es true, solo devuelve productos del usuario autenticado
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+    post:
+      tags:
+        - Products
+      summary: Crear nuevo producto
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '201':
+          description: Producto creado
+        '401':
+          description: No autorizado
+
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Detalle de un producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Datos del producto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Producto no encontrado
+
+    put:
+      tags:
+        - Products
+      summary: Actualizar un producto existente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdate'
+      responses:
+        '200':
+          description: Producto actualizado
+        '401':
+          description: No autorizado
+        '403':
+          description: Prohibido (no es el dueño)
+        '404':
+          description: No encontrado
+
+    delete:
+      tags:
+        - Products
+      summary: Eliminar un producto
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Producto eliminado
+        '401':
+          description: No autorizado
+        '403':
+          description: Prohibido (no es el dueño)
+        '404':
+          description: No encontrado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserRegister:
+      type: object
+      required: [email, password, name]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+        name: { type: string }
+
+    UserLogin:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+
+    AuthToken:
+      type: object
+      properties:
+        access_token: { type: string }
+        user:
+          type: object
+          properties:
+            id: { type: integer }
+            email: { type: string }
+            name: { type: string }
+
+    Category:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+
+    Product:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        price: { type: number }
+        category_slug: { type: string }
+        is_sold: { type: boolean }
+        image_url: { type: string }
+        created_at: { type: string, format: date-time }
+        seller:
+          type: object
+          properties:
+            id: { type: integer }
+            name: { type: string }
+
+    ProductCreate:
+      type: object
+      required: [title, description, price, category_slug]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        price: { type: number, minimum: 0 }
+        category_slug: { type: string }
+        image_url: { type: string, description: "URL de la imagen o base64 (Placeholder para demo)" }
+
+    ProductUpdate:
+      type: object
+      properties:
+        title: { type: string }
+        description: { type: string }
+        price: { type: number, minimum: 0 }
+        category_slug: { type: string }
+        image_url: { type: string }
+        is_sold: { type: boolean }
