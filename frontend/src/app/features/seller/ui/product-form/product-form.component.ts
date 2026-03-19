@@ -38,10 +38,12 @@ export class ProductFormComponent implements OnInit {
   save = output<ProductCreate | ProductUpdate>();
   cancel = output<void>();
 
+  imagePreview: string | null = null;
+
   productForm = new FormGroup({
     title: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     description: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    price: new FormControl(0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
+    price: new FormControl<number>(0, { nonNullable: true, validators: [Validators.required, Validators.min(0)] }),
     category_slug: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     image_url: new FormControl('', { nonNullable: true }),
     is_sold: new FormControl(false, { nonNullable: true })
@@ -51,7 +53,28 @@ export class ProductFormComponent implements OnInit {
     const data = this.initialData();
     if (data) {
       this.productForm.patchValue(data);
+      if (data.image_url) {
+        this.imagePreview = data.image_url;
+      }
     }
+  }
+
+  onFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64String = reader.result as string;
+        this.imagePreview = base64String;
+        this.productForm.controls.image_url.setValue(base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage() {
+    this.imagePreview = null;
+    this.productForm.controls.image_url.setValue('');
   }
 
   onSubmit() {

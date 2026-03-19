@@ -61,12 +61,28 @@
         </mat-form-field>
       </div>
 
-      <!-- Fila 4 -->
-      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
-        <mat-label>URL de la Imagen</mat-label>
-        <mat-icon matPrefix color="primary" class="prefix-icon">link</mat-icon>
-        <input matInput formControlName="image_url" placeholder="https://ejemplo.com/imagen.jpg">
-      </mat-form-field>
+      <!-- Fila 4: Subida de Imagen -->
+      <div class="image-upload-section full-width">
+        <label class="upload-label">Fotografía del Producto</label>
+        
+        @if (!imagePreview) {
+          <div class="upload-area" (click)="fileInput.click()">
+            <mat-icon>add_photo_alternate</mat-icon>
+            <p>Haz clic para subir una imagen</p>
+            <span class="hint">Recomendado: 800x800px, formato JPG o PNG</span>
+          </div>
+        } @else {
+          <div class="image-preview-container">
+            <img [src]="imagePreview" alt="Vista previa del producto">
+            <button mat-mini-fab color="warn" class="remove-btn" type="button" (click)="removeImage()" matTooltip="Eliminar imagen">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
+
+        <!-- Input de archivo oculto -->
+        <input type="file" #fileInput hidden accept="image/png, image/jpeg, image/webp" (change)="onFileSelected($event)">
+      </div>
 
     </form>
   </mat-card-content>
