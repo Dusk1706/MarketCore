@@ -79,11 +79,11 @@
           }
           
           mat-icon {
-            color: #cbd5e1;
+            color: #94a3b8; // Increased contrast for placeholder icon
           }
           
           &:hover {
-            border-color: #cbd5e1;
+            border-color: #94a3b8;
           }
           
           &.active {
@@ -138,7 +138,7 @@
 
         .price {
           font-size: 2.25rem;
-          color: #7c3aed; // Primary Violet (Armonizado con el tema)
+          color: #0f172a; // Changed to dark slate/black to let buttons pop
           font-weight: 700;
           margin: 0 0 0.25rem 0;
           letter-spacing: -0.01em;
@@ -268,15 +268,17 @@
 
           button {
             flex: 1;
-            padding: 0 1rem;
-            height: 52px;
+            padding: 12px 24px;
+            min-height: 52px;
+            height: auto;
             font-size: 1.1rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
             
             mat-icon {
-              margin-right: 8px;
+              margin-right: 0;
             }
             
             span {
