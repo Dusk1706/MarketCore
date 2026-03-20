@@ -39,6 +39,11 @@
 
         ::ng-deep .mdc-list-item__content {
           overflow: hidden;
+          flex: 1;
+        }
+
+        ::ng-deep .mdc-list-item__end {
+          flex-shrink: 0;
         }
 
         &.active {
