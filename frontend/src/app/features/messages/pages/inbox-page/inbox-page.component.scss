@@ -32,23 +32,40 @@
       flex: 1;
       overflow-y: auto;
       padding: 0;
+      display: flex;
+      flex-direction: column;
 
       .conversation-item {
+        width: 100%;
+        border: 0;
         border-bottom: 1px solid rgba(0,0,0,0.03);
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
         transition: all 0.2s ease;
+        padding: 1rem 0.75rem 1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
 
-        ::ng-deep .mdc-list-item__content {
-          overflow: hidden;
+        .conversation-copy {
+          min-width: 0;
           flex: 1;
-        }
-
-        ::ng-deep .mdc-list-item__end {
-          flex-shrink: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.125rem;
         }
 
         &.active {
           background-color: #eff6ff;
           border-left: 4px solid var(--mc-primary-strong);
+          padding-left: 1rem;
+        }
+
+        &:hover {
+          background-color: #f8fafc;
         }
 
         .conv-title {
@@ -70,7 +87,14 @@
         }
 
         .conv-chevron {
-          margin-right: 4px;
+          color: var(--mc-muted);
+          flex: 0 0 auto;
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+          margin-right: 0;
+          opacity: 0.8;
         }
       }
     }

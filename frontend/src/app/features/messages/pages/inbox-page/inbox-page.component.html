@@ -16,18 +16,23 @@
           <p>Aún no tienes mensajes</p>
         </div>
       } @else {
-        <mat-nav-list class="conversation-list">
+        <div class="conversation-list" role="listbox" aria-label="Conversaciones">
           @for (conversation of conversations(); track conversation.id) {
-            <mat-list-item
+            <button
+              type="button"
               class="conversation-item"
+              role="option"
+              [attr.aria-selected]="selectedConversation()?.id === conversation.id"
               [class.active]="selectedConversation()?.id === conversation.id"
               (click)="selectConversation(conversation)">
-              <div matListItemTitle class="conv-title">{{ conversationTitle(conversation) }}</div>
-              <div matListItemLine class="conv-subtitle">Ver historial del producto</div>
-              <mat-icon matListItemMeta class="conv-chevron">chevron_right</mat-icon>
-            </mat-list-item>
+              <span class="conversation-copy">
+                <span class="conv-title">{{ conversationTitle(conversation) }}</span>
+                <span class="conv-subtitle">Ver historial del producto</span>
+              </span>
+              <mat-icon class="conv-chevron" aria-hidden="true">chevron_right</mat-icon>
+            </button>
           }
-        </mat-nav-list>
+        </div>
       }
     }
   </aside>
@@ -68,10 +73,10 @@
           <form class="reply-form" (ngSubmit)="sendReply($event)">
             <mat-form-field appearance="outline" class="reply-input">
               <mat-label>Tu mensaje...</mat-label>
-              <textarea matInput rows="1" [formControl]="replyControl" (keydown.enter)="handleEnter($any($event))"></textarea>
+              <textarea matInput rows="1" [attr.maxlength]="replyMaxLength" [formControl]="replyControl" (keydown.enter)="handleEnter($any($event))"></textarea>
             </mat-form-field>
 
-            <button mat-flat-button color="primary" class="send-btn" type="submit" [disabled]="sending() || !replyControl.valid">
+            <button mat-flat-button color="primary" class="send-btn" type="submit" [disabled]="!canSendReply()">
               @if (sending()) {
                 <mat-spinner diameter="24"></mat-spinner>
               } @else {
