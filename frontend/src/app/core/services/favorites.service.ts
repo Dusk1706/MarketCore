@@ -1,34 +1,50 @@
-import { Injectable, inject, signal, effect } from '@angular/core';
+import { HttpContext, HttpErrorResponse } from '@angular/common/http';
+import { DestroyRef, Injectable, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FavoritesService as ApiFavoritesService } from '../api/api/favorites.service';
 import { AuthService } from './auth.service';
-import { map, catchError, of } from 'rxjs';
+import { Observable, catchError, finalize, map, of, shareReplay, switchMap, tap } from 'rxjs';
+import { BYPASS_GLOBAL_HTTP_ERROR_HANDLER } from '../interceptors/http-context-tokens';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoreFavoritesService {
-  private apiFavorites = inject(ApiFavoritesService);
-  private authService = inject(AuthService);
+  private readonly apiFavorites = inject(ApiFavoritesService);
+  private readonly authService = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
+  private syncedUserId: number | null = null;
+  private pendingLoad$: Observable<Set<number>> | null = null;
 
-  // Set of favorite product IDs
-  private favoriteIds = signal<Set<number>>(new Set());
+  private readonly favoriteIds = signal<Set<number>>(new Set());
+  private readonly hasLoaded = signal(false);
+  private readonly isLoading = signal(false);
 
   constructor() {
-    // Re-fetch favorites when user logs in
     effect(() => {
-      if (this.authService.isAuthenticated()) {
-        this.loadFavorites();
-      } else {
-        this.favoriteIds.set(new Set());
+      const currentUserId = this.authService.currentUser()?.id ?? null;
+      if (currentUserId === this.syncedUserId) {
+        return;
       }
-    });
+
+      this.syncedUserId = currentUserId;
+      this.favoriteIds.set(new Set());
+      this.hasLoaded.set(false);
+      this.isLoading.set(false);
+      this.pendingLoad$ = null;
+    }, { allowSignalWrites: true });
   }
 
-  loadFavorites() {
-    this.apiFavorites.usersMeFavoritesGet().pipe(
-      map(products => new Set(products.map(p => p.id!))),
-      catchError(() => of(new Set<number>()))
-    ).subscribe(ids => this.favoriteIds.set(ids));
+  loadFavorites(): void {
+    this.loadFavoriteIds(false)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
+  }
+
+  ensureLoadedSilently(): void {
+    this.loadFavoriteIds(true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   isFavorite(productId: number): boolean {
@@ -36,23 +52,76 @@ export class CoreFavoritesService {
   }
 
   toggleFavorite(productId: number) {
-    const isFav = this.isFavorite(productId);
-    const request$ = isFav 
-      ? this.apiFavorites.usersMeFavoritesProductIdDelete(productId)
-      : this.apiFavorites.usersMeFavoritesProductIdPost(productId);
+    return this.loadFavoriteIds(false).pipe(
+      switchMap(() => {
+        const isFav = this.isFavorite(productId);
+        const request$ = isFav
+          ? this.apiFavorites.usersMeFavoritesProductIdDelete(productId)
+          : this.apiFavorites.usersMeFavoritesProductIdPost(productId);
 
-    return request$.pipe(
-      map(() => {
-        this.favoriteIds.update(set => {
-          const newSet = new Set(set);
-          if (isFav) {
-            newSet.delete(productId);
-          } else {
-            newSet.add(productId);
-          }
-          return newSet;
-        });
-        return !isFav;
+        return request$.pipe(
+          map(() => {
+            this.favoriteIds.update((set) => {
+              const newSet = new Set(set);
+              if (isFav) {
+                newSet.delete(productId);
+              } else {
+                newSet.add(productId);
+              }
+              return newSet;
+            });
+            this.hasLoaded.set(true);
+            return !isFav;
+          })
+        );
+      })
+    );
+  }
+
+  private loadFavoriteIds(silent: boolean): Observable<Set<number>> {
+    if (!this.authService.isAuthenticated()) {
+      this.favoriteIds.set(new Set());
+      this.hasLoaded.set(false);
+      return of(new Set<number>());
+    }
+
+    if (this.hasLoaded()) {
+      return of(this.favoriteIds());
+    }
+
+    if (this.pendingLoad$) {
+      return this.pendingLoad$;
+    }
+
+    this.isLoading.set(true);
+    this.pendingLoad$ = this.fetchFavoriteIds(silent).pipe(
+      tap((ids) => {
+        this.favoriteIds.set(ids);
+        this.hasLoaded.set(true);
+      }),
+      finalize(() => {
+        this.isLoading.set(false);
+        this.pendingLoad$ = null;
+      }),
+      shareReplay(1)
+    );
+
+    return this.pendingLoad$;
+  }
+
+  private fetchFavoriteIds(silent: boolean): Observable<Set<number>> {
+    const requestOptions = silent
+      ? { context: new HttpContext().set(BYPASS_GLOBAL_HTTP_ERROR_HANDLER, true) }
+      : undefined;
+
+    return this.apiFavorites.usersMeFavoritesGet('body', false, requestOptions).pipe(
+      map((products) => new Set(products.flatMap((product) => product.id != null ? [product.id] : []))),
+      catchError((error: HttpErrorResponse) => {
+        if (silent && error.status === 401) {
+          this.authService.logout();
+        }
+
+        return of(new Set<number>());
       })
     );
   }

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BYPASS_GLOBAL_HTTP_ERROR_HANDLER } from './http-context-tokens';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -12,6 +13,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      if (req.context.get(BYPASS_GLOBAL_HTTP_ERROR_HANDLER)) {
+        return throwError(() => error);
+      }
+
       let message = 'Ocurrió un error inesperado';
 
       if (error.status === 401 && !req.url.includes('/auth/login')) {

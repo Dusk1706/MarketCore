@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, Inject, effect } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { io, Socket } from 'socket.io-client';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Message } from '../api';
 
@@ -10,6 +10,8 @@ import { Message } from '../api';
 })
 export class WebsocketService {
   private socket: Socket | null = null;
+  private activeUserId: number | null = null;
+  private readonly newMessageSubject = new Subject<Message>();
 
   constructor(
     private authService: AuthService,
@@ -17,9 +19,9 @@ export class WebsocketService {
   ) {
     if (isPlatformBrowser(this.platformId)) {
       effect(() => {
-        const user = this.authService.currentUser();
-        if (user) {
-          this.connect(user.id!);
+        const userId = this.authService.currentUser()?.id ?? null;
+        if (userId != null) {
+          this.connect(userId);
         } else {
           this.disconnect();
         }
@@ -28,40 +30,45 @@ export class WebsocketService {
   }
 
   private connect(userId: number): void {
-    if (!this.socket) {
-      const url = window.location.port === '4200' ? 'http://localhost:5000' : window.location.origin;
-      
-      this.socket = io(url, {
+    this.activeUserId = userId;
+
+    if (this.socket) {
+      if (this.socket.connected) {
+        this.socket.emit('join', { user_id: userId });
+      }
+      return;
+    }
+
+    this.socket = io(this.resolveSocketUrl(), {
         path: '/socket.io',
         transports: ['websocket', 'polling']
       });
 
-      this.socket.on('connect', () => {
-        this.socket?.emit('join', { user_id: userId });
-      });
-    }
+    this.socket.on('connect', () => {
+      if (this.activeUserId != null) {
+        this.socket?.emit('join', { user_id: this.activeUserId });
+      }
+    });
+
+    this.socket.on('new_message', (message: Message) => {
+      this.newMessageSubject.next(message);
+    });
   }
 
   private disconnect(): void {
+    this.activeUserId = null;
     if (this.socket) {
+      this.socket.removeAllListeners();
       this.socket.disconnect();
       this.socket = null;
     }
   }
 
-  public onNewMessage(): Observable<Message> {
-    return new Observable<Message>(observer => {
-      if (!this.socket) {
-        return;
-      }
-      
-      this.socket.on('new_message', (msg: Message) => {
-        observer.next(msg);
-      });
+  private resolveSocketUrl(): string {
+    return window.location.port === '4200' ? 'http://localhost:5000' : window.location.origin;
+  }
 
-      return () => {
-        this.socket?.off('new_message');
-      };
-    });
+  public onNewMessage(): Observable<Message> {
+    return this.newMessageSubject.asObservable();
   }
 }

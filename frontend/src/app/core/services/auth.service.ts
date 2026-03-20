@@ -9,20 +9,25 @@ import { AuthService as ApiAuthService } from '../api/api/auth.service';
 export class AuthService {
   private apiAuth = inject(ApiAuthService);
   
-  private _currentUser = signal<User | null>(null);
-  currentUser = this._currentUser.asReadonly();
+  private readonly _currentUser = signal<User | null>(null);
+  private readonly _token = signal<string | null>(null);
+  readonly currentUser = this._currentUser.asReadonly();
   
-  isAuthenticated = computed(() => !!this._currentUser());
+  readonly isAuthenticated = computed(() => !!this._currentUser() && !!this._token());
 
   constructor() {
+    const savedToken = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      try {
-        this._currentUser.set(JSON.parse(savedUser));
-      } catch (e) {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-      }
+    if (!savedToken || !savedUser) {
+      this.clearSession();
+      return;
+    }
+
+    try {
+      this._token.set(savedToken);
+      this._currentUser.set(JSON.parse(savedUser));
+    } catch {
+      this.clearSession();
     }
   }
 
@@ -30,9 +35,7 @@ export class AuthService {
     return this.apiAuth.authLoginPost(credentials).pipe(
       tap((response: AuthToken) => {
         if (response.access_token && response.user) {
-          localStorage.setItem('token', response.access_token);
-          localStorage.setItem('user', JSON.stringify(response.user));
-          this._currentUser.set(response.user);
+          this.setSession(response.access_token, response.user);
         }
       })
     );
@@ -42,13 +45,25 @@ export class AuthService {
     return this.apiAuth.authRegisterPost(userData);
   }
 
-  logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this._currentUser.set(null);
+  logout(): void {
+    this.clearSession();
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return this._token();
+  }
+
+  private setSession(token: string, user: User): void {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    this._token.set(token);
+    this._currentUser.set(user);
+  }
+
+  private clearSession(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    this._token.set(null);
+    this._currentUser.set(null);
   }
 }

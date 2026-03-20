@@ -7,6 +7,16 @@ import { routes } from './app.routes';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { BASE_PATH } from './core/api/variables';
+import { Configuration, ConfigurationParameters } from './core/api/configuration';
+
+export function apiConfigFactory(): Configuration {
+  const params: ConfigurationParameters = {
+    credentials: {
+      bearerAuth: () => localStorage.getItem('token') || undefined
+    }
+  };
+  return new Configuration(params);
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,6 +24,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     // Registramos ambos interceptores. El orden importa: primero añade el token, luego maneja errores
     provideHttpClient(withInterceptors([jwtInterceptor, errorInterceptor])),
-    { provide: BASE_PATH, useValue: '/api/v1' } // Se comunica a través del proxy de Nginx en Docker
+    { provide: BASE_PATH, useValue: '/api/v1' }, // Se comunica a través del proxy de Nginx en Docker
+    { provide: Configuration, useFactory: apiConfigFactory }
   ]
 };
+
