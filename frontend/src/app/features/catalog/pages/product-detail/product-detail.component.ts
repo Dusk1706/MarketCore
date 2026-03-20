@@ -17,6 +17,7 @@ import { ReviewsService } from '../../../../core/api/api/reviews.service';
 import { Product } from '../../../../core/api/model/product';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ContactDialogComponent } from '../../components/contact-dialog/contact-dialog.component';
+import { ReviewDialogComponent, ReviewDialogResult } from '../../components/review-dialog/review-dialog.component';
 
 @Component({
   selector: 'app-product-detail',
@@ -52,6 +53,9 @@ export class ProductDetailComponent implements OnInit {
   averageRating = signal(0);
   totalSales = signal(0);
   totalReviews = signal(0);
+  currentUserBought = signal(false);
+  hasReviewed = signal(false);
+  currentOrderId = signal<number | null>(null);
 
   ratingStars = computed(() => this.buildRatingStars(this.averageRating()));
   isOwnProduct = computed(() => {
@@ -97,13 +101,50 @@ export class ProductDetailComponent implements OnInit {
     }
 
     this.ordersApi.ordersPost({ product_id: currentProduct.id }).subscribe({
-      next: () => {
+      next: (order) => {
+        if (order && order.id) {
+          this.currentOrderId.set(order.id);
+        }
         this.product.update((p) => (p ? { ...p, is_sold: true } : p));
+        this.currentUserBought.set(true);
         this.snackBar.open('Compra realizada con éxito', 'Cerrar', { duration: 3000 });
+        this.onLeaveReview(); // Prompt review immediately after purchase
       },
       error: (err) => {
         const errorMsg = err?.error?.message ?? 'No se pudo completar la compra';
         this.snackBar.open(errorMsg, 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  onLeaveReview() {
+    const currentProduct = this.product();
+    const sellerId = currentProduct?.seller?.id;
+    const orderId = this.currentOrderId();
+    if (!sellerId || !orderId) return;
+
+    const dialogRef = this.dialog.open(ReviewDialogComponent, {
+      width: '400px',
+      data: {
+        sellerName: currentProduct.seller?.name || 'el vendedor'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result?: ReviewDialogResult) => {
+      if (result) {
+        this.reviewsApi.ordersIdReviewsPost(orderId, {
+          rating: result.rating,
+          comment: result.comment
+        }).subscribe({
+          next: () => {
+            this.hasReviewed.set(true);
+            this.snackBar.open('¡Gracias por tu reseña!', 'Cerrar', { duration: 3000 });
+            this.loadSellerReviews(sellerId); // Refresh rating
+          },
+          error: () => {
+            this.snackBar.open('No se pudo enviar la reseña', 'Cerrar', { duration: 3000 });
+          }
+        });
       }
     });
   }

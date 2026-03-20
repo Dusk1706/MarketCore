@@ -14,6 +14,7 @@ import { MessagesService } from '../../../../core/api/api/messages.service';
 import { Conversation, Message } from '../../../../core/api/model/models';
 import { AuthService } from '../../../../core/services/auth.service';
 import { WebsocketService } from '../../../../core/services/websocket.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/http-error-message.util';
 
 @Component({
@@ -38,6 +39,7 @@ export class InboxPageComponent implements OnInit {
   private readonly messagesApi = inject(MessagesService);
   private readonly authService = inject(AuthService);
   private readonly wsService = inject(WebsocketService);
+  private readonly notificationService = inject(NotificationService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -67,6 +69,7 @@ export class InboxPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.notificationService.clearUnreadMessages();
     this.loadConversations();
     // Delay websocket listening slightly to ensure session is stable
     setTimeout(() => this.listenToWebsocket(), 500);
@@ -104,6 +107,7 @@ export class InboxPageComponent implements OnInit {
   selectConversation(conversation: Conversation): void {
     this.selectedConversation.set(conversation);
     this.replyControl.setValue('');
+    this.notificationService.clearUnreadMessages();
 
     if (conversation.id == null) {
       this.messages.set([]);
@@ -172,6 +176,11 @@ export class InboxPageComponent implements OnInit {
   }
 
   conversationTitle(conversation: Conversation): string {
-    return conversation.product?.title ?? `Producto #${conversation.product_id ?? 'N/A'}`;
+    const productTitle = conversation.product?.title ?? `Producto #${conversation.product_id ?? 'N/A'}`;
+    const myId = this.currentUserId();
+    const isBuyer = conversation.buyer_id === myId;
+    const otherUser = isBuyer ? conversation.seller : conversation.buyer;
+    const contactName = otherUser?.name ? ` - ${otherUser.name}` : '';
+    return `${productTitle}${contactName}`;
   }
 }

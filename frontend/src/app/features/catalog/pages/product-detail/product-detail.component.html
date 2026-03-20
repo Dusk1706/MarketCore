@@ -5,105 +5,124 @@
     </div>
   } @else {
     @if (product(); as p) {
-      <button mat-button routerLink="/catalog" class="back-button">
-        <mat-icon>arrow_back</mat-icon>
-        Volver al Catálogo
-      </button>
+      <div class="navigation-header">
+        <button mat-button routerLink="/catalog" class="back-button">
+          <mat-icon>arrow_back</mat-icon>
+          Volver al Catálogo
+        </button>
+      </div>
 
       <div class="product-grid">
+        <!-- Sección de Imagen -->
         <div class="image-gallery-section">
-          <div class="main-image">
+          <mat-card appearance="outlined" class="main-image-card">
             @if (p.image_url) {
-              <img [src]="p.image_url" [alt]="p.title">
+              <img mat-card-image [src]="p.image_url" [alt]="p.title">
             } @else {
-              <div class="placeholder-img">Sin Imagen</div>
+              <div class="placeholder-img">
+                <mat-icon>image_not_supported</mat-icon>
+                <span>Sin Imagen</span>
+              </div>
             }
-          </div>
+          </mat-card>
           
-          <!-- Fila de miniaturas (Galería) -->
-          <div class="thumbnail-row">
-            @if (p.image_url) {
-              <div class="thumbnail active"><img [src]="p.image_url" alt="Miniatura principal"></div>
-              <div class="thumbnail"><mat-icon>image</mat-icon></div>
-              <div class="thumbnail"><mat-icon>image</mat-icon></div>
-              <div class="thumbnail"><mat-icon>image</mat-icon></div>
-            } @else {
-              <div class="thumbnail active"><mat-icon>image</mat-icon></div>
-              <div class="thumbnail"><mat-icon>image</mat-icon></div>
-              <div class="thumbnail"><mat-icon>image</mat-icon></div>
-            }
-          </div>
+          <!-- Galería Dinámica (Si existieran múltiples imágenes) -->
+          @if (p.image_url) {
+            <div class="thumbnail-row">
+              <div class="thumbnail active">
+                <img [src]="p.image_url" alt="Imagen principal">
+              </div>
+              <!-- Aquí se iterarían otras imágenes si el modelo las tuviera -->
+            </div>
+          }
         </div>
 
+        <!-- Sección de Información -->
         <div class="info-section">
-          <div class="header">
-            <mat-chip-listbox>
+          <header class="product-header">
+            <div class="category-badges">
               @if (p.category_slug) {
-                <mat-chip>{{ p.category_slug }}</mat-chip>
+                <mat-chip-set>
+                  <mat-chip>{{ p.category_slug }}</mat-chip>
+                </mat-chip-set>
               }
               @if (p.is_sold) {
-                <mat-chip highlighted color="warn">Vendido</mat-chip>
+                <mat-chip-set>
+                  <mat-chip class="sold-chip">Vendido</mat-chip>
+                </mat-chip-set>
               }
-            </mat-chip-listbox>
+            </div>
             
-            <h1>{{ p.title }}</h1>
+            <h1 class="mat-headline-medium">{{ p.title }}</h1>
             
-            <!-- Señales de Confianza: Calificaciones -->
-            <div class="rating-stars">
-              @for (star of ratingStars(); track $index) {
-                <mat-icon class="star" [class.filled]="star !== 'star_border'">{{ star }}</mat-icon>
-              }
+            <div class="rating-container">
+              <div class="stars">
+                @for (star of ratingStars(); track $index) {
+                  <mat-icon [class.filled]="star !== 'star_border'">{{ star }}</mat-icon>
+                }
+              </div>
               <span class="rating-text">{{ averageRating() | number:'1.1-1' }} ({{ totalReviews() }} reseñas)</span>
             </div>
             
-            <p class="price">{{ p.price | currency }}</p>
+            <div class="price-tag">
+              <span class="currency">$</span>
+              <span class="amount">{{ p.price | number:'1.0-0' }}</span>
+            </div>
             
-            <!-- Señales de Confianza: Disponibilidad -->
-            <p class="stock-status">
-              <mat-icon>check_circle</mat-icon>
-              En stock y listo para enviar
-            </p>
-          </div>
-
-          <div class="seller-info">
-            <div class="seller-avatar">
-              <mat-icon>storefront</mat-icon>
+            <div class="availability-status">
+              <mat-icon>verified</mat-icon>
+              <span>Producto verificado y disponible</span>
             </div>
-            <div class="seller-details">
-              <span class="seller-label">Vendido por:</span>
-              <a href="javascript:void(0)" class="seller-name">{{ p.seller?.name || 'Usuario Anónimo' }}</a>
-              <span class="seller-rating">⭐ {{ averageRating() | number:'1.1-1' }} ({{ totalSales() }} ventas exitosas)</span>
-            </div>
+          </header>
+
+          <mat-divider></mat-divider>
+
+          <mat-card appearance="outlined" class="seller-card">
+            <mat-card-header>
+              <div mat-card-avatar class="seller-avatar">
+                <mat-icon>person</mat-icon>
+              </div>
+              <mat-card-title>{{ p.seller?.name || 'Vendedor MarketCore' }}</mat-card-title>
+              <mat-card-subtitle>⭐ {{ averageRating() | number:'1.1-1' }} | {{ totalSales() }} ventas</mat-card-subtitle>
+            </mat-card-header>
+          </mat-card>
+
+          <div class="description-container">
+            <h3 class="mat-title-medium">Descripción</h3>
+            <p class="mat-body-large">{{ p.description }}</p>
           </div>
 
-          <div class="description-section">
-            <h3>Descripción del Producto</h3>
-            <p>{{ p.description }}</p>
-          </div>
-
-          <div class="purchase-section">
-            <!-- Señales de Confianza: Envío -->
-            <div class="shipping-info">
+          <div class="purchase-actions">
+            <mat-card appearance="outlined" class="shipping-card">
               <mat-icon>local_shipping</mat-icon>
-              <span><strong>Envío gratis</strong> llegando el jueves</span>
-            </div>
+              <div class="shipping-text">
+                <strong>Envío gestionado por MarketCore</strong>
+                <span>Recíbelo en 24-48 horas</span>
+              </div>
+            </mat-card>
             
-            <div class="actions">
+            <div class="button-group">
               @if (isOwnProduct()) {
-                <button mat-flat-button color="accent" class="edit-button" [routerLink]="['/seller']">
+                <button mat-flat-button color="accent" class="action-btn" [routerLink]="['/seller']">
                   <mat-icon>edit</mat-icon>
-                  <span>GESTIONAR MI PRODUCTO</span>
+                  GESTIONAR PRODUCTO
                 </button>
               } @else {
-                <button mat-flat-button color="primary" class="buy-button" (click)="onBuy()" [disabled]="p.is_sold">
-                  <mat-icon>shopping_cart</mat-icon>
-                  <span>COMPRAR AHORA</span>
-                </button>
+                @if (currentUserBought() && !hasReviewed()) {
+                  <button mat-flat-button color="accent" class="action-btn" (click)="onLeaveReview()">
+                    <mat-icon>star</mat-icon>
+                    DEJAR RESEÑA
+                  </button>
+                } @else {
+                  <button mat-flat-button color="primary" class="action-btn buy-btn" (click)="onBuy()" [disabled]="p.is_sold">
+                    <mat-icon>shopping_cart</mat-icon>
+                    {{ p.is_sold ? (hasReviewed() ? 'COMPRADO' : 'AGOTADO') : 'COMPRAR AHORA' }}
+                  </button>
+                }
                 
-                <!-- Botón secundario armonizado (Outline) -->
-                <button mat-stroked-button color="primary" class="contact-button" (click)="onContactSeller()">
-                  <mat-icon>chat</mat-icon>
-                  <span>Contactar Vendedor</span>
+                <button mat-stroked-button color="primary" class="action-btn" (click)="onContactSeller()">
+                  <mat-icon>chat_bubble_outline</mat-icon>
+                  Contactar
                 </button>
               }
             </div>
@@ -111,10 +130,13 @@
         </div>
       </div>
     } @else {
-      <div class="no-results">
-        <p>No se encontró el producto.</p>
-        <button mat-flat-button color="primary" routerLink="/catalog">Volver al catálogo</button>
-      </div>
+      <mat-card class="error-card">
+        <mat-card-content>
+          <mat-icon>error_outline</mat-icon>
+          <p>No pudimos encontrar el producto solicitado.</p>
+          <button mat-flat-button color="primary" routerLink="/catalog">Volver al catálogo</button>
+        </mat-card-content>
+      </mat-card>
     }
   }
 </div>
