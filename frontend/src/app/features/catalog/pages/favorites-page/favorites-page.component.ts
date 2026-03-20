@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FavoritesService } from '../../../../core/api/api/favorites.service';
-import { Product } from '../../../../core/api/model/models';
+import { Product } from '../../../../core/api/model/product';
 import { ProductCardComponent } from '../../ui/product-card/product-card.component';
 import { RouterLink } from '@angular/router';
 
@@ -17,7 +17,6 @@ import { RouterLink } from '@angular/router';
 })
 export class FavoritesPageComponent implements OnInit {
   private favoritesApi = inject(FavoritesService);
-  private snackBar = inject(MatSnackBar);
 
   products = signal<Product[]>([]);
   loading = signal(false);
@@ -30,12 +29,11 @@ export class FavoritesPageComponent implements OnInit {
     this.loading.set(true);
     this.favoritesApi.usersMeFavoritesGet().subscribe({
       next: (products) => {
-        this.products.set(products);
+        this.products.set(products as Product[]);
         this.loading.set(false);
       },
       error: () => {
         this.loading.set(false);
-        this.snackBar.open('Error al cargar favoritos', 'Cerrar', { duration: 3000 });
       }
     });
   }

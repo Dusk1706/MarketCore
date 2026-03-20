@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
 import { FavoritesPageComponent } from './favorites-page.component';
 
@@ -8,7 +10,11 @@ describe('FavoritesPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FavoritesPageComponent]
+      imports: [FavoritesPageComponent],
+      providers: [
+        provideHttpClient(),
+        provideRouter([])
+      ]
     })
     .compileComponents();
     
@@ -21,3 +27,4 @@ describe('FavoritesPageComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+

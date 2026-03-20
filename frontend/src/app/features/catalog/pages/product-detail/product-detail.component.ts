@@ -7,12 +7,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { MessagesService } from '../../../../core/api/api/messages.service';
 import { OrdersService } from '../../../../core/api/api/orders.service';
 import { ProductsService } from '../../../../core/api/api/products.service';
 import { ReviewsService } from '../../../../core/api/api/reviews.service';
-import { Product } from '../../../../core/api/model/models';
+import { Product } from '../../../../core/api/model/product';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ContactDialogComponent } from '../../components/contact-dialog/contact-dialog.component';
 
@@ -26,7 +28,9 @@ import { ContactDialogComponent } from '../../components/contact-dialog/contact-
     MatIconModule, 
     MatChipsModule, 
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatCardModule,
+    MatDividerModule
   ],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
@@ -67,7 +71,7 @@ export class ProductDetailComponent implements OnInit {
     this.isLoading.set(true);
     this.productsApi.productsIdGet(id).subscribe({
       next: (product) => {
-        this.product.set(product);
+        this.product.set(product as Product);
         const sellerId = product.seller?.id;
         if (sellerId != null) {
           this.loadSellerReviews(sellerId);
@@ -75,7 +79,6 @@ export class ProductDetailComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: () => {
-        this.snackBar.open('Error al cargar el producto', 'Cerrar', { duration: 3000 });
         this.isLoading.set(false);
       }
     });

@@ -1,73 +1,86 @@
-<section class="inbox-page">
-  <aside class="conversations-panel">
-    <h2>Inbox</h2>
+<div class="inbox-container">
+  <!-- Panel Izquierdo: Conversaciones -->
+  <aside class="conversations-sidebar">
+    <div class="sidebar-header">
+      <h2>Inbox</h2>
+    </div>
 
     @if (loadingConversations()) {
-      <div class="center-state">
+      <div class="empty-state">
         <mat-spinner diameter="32"></mat-spinner>
       </div>
     } @else {
       @if (conversations().length === 0) {
-        <div class="center-state empty">Aun no tienes conversaciones.</div>
+        <div class="empty-state">
+          <mat-icon>forum</mat-icon>
+          <p>Aún no tienes mensajes</p>
+        </div>
       } @else {
-        <mat-nav-list>
+        <mat-nav-list class="conversation-list">
           @for (conversation of conversations(); track conversation.id) {
-            <a
-              mat-list-item
-              href="javascript:void(0)"
+            <mat-list-item
+              class="conversation-item"
               [class.active]="selectedConversation()?.id === conversation.id"
               (click)="selectConversation(conversation)">
-              <span matListItemTitle>{{ conversationTitle(conversation) }}</span>
-              <span matListItemLine>Conversacion #{{ conversation.id }}</span>
-            </a>
+              <div matListItemTitle class="conv-title">{{ conversationTitle(conversation) }}</div>
+              <div matListItemLine class="conv-subtitle">Ver historial del producto</div>
+              <mat-icon matListItemMeta>chevron_right</mat-icon>
+            </mat-list-item>
           }
         </mat-nav-list>
       }
     }
   </aside>
 
-  <section class="thread-panel">
+  <!-- Panel Derecho: Hilo de Chat -->
+  <main class="chat-window">
     @if (!selectedConversation()) {
-      <div class="center-state">Selecciona una conversacion para ver el hilo.</div>
+      <div class="empty-state">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <p>Selecciona un chat para empezar</p>
+      </div>
     } @else {
-      @if (selectedConversation(); as activeConversation) {
-      <header class="thread-header">
-        <h3>{{ conversationTitle(activeConversation) }}</h3>
-      </header>
+      @if (selectedConversation(); as activeConv) {
+        <header class="chat-header">
+          <mat-icon class="product-icon">shopping_bag</mat-icon>
+          <h3>{{ conversationTitle(activeConv) }}</h3>
+        </header>
 
-      @if (loadingMessages()) {
-        <div class="center-state">
-          <mat-spinner diameter="32"></mat-spinner>
+        <div class="messages-viewport" #messageContainer>
+          @if (loadingMessages()) {
+            <div class="empty-state">
+              <mat-spinner diameter="32"></mat-spinner>
+            </div>
+          } @else {
+            @for (message of messages(); track message.id) {
+              <div class="message-bubble" [class.sent]="isOwnMessage(message)" [class.received]="!isOwnMessage(message)">
+                {{ message.content }}
+              </div>
+            } @empty {
+              <div class="empty-state">
+                <p>Inicia la conversación enviando un mensaje</p>
+              </div>
+            }
+          }
         </div>
-      } @else {
-        <div class="messages-list">
-          @for (message of messages(); track message.id) {
-            <article class="message" [class.own]="isOwnMessage(message)">
-              <p>{{ message.content }}</p>
-            </article>
-          }
 
-          @if (messages().length === 0) {
-            <div class="center-state empty">Aun no hay mensajes en esta conversacion.</div>
-          }
+        <div class="message-input-area">
+          <form class="reply-form" (ngSubmit)="sendReply($event)">
+            <mat-form-field appearance="outline" class="reply-input">
+              <mat-label>Tu mensaje...</mat-label>
+              <textarea matInput rows="1" [formControl]="replyControl" (keydown.enter)="handleEnter($any($event))"></textarea>
+            </mat-form-field>
+
+            <button mat-flat-button color="primary" class="send-btn" type="submit" [disabled]="sending() || !replyControl.valid">
+              @if (sending()) {
+                <mat-spinner diameter="24"></mat-spinner>
+              } @else {
+                <mat-icon>send</mat-icon>
+              }
+            </button>
+          </form>
         </div>
-      }
-
-      <form class="reply-form" (ngSubmit)="sendReply()">
-        <mat-form-field appearance="outline" class="reply-input">
-          <mat-label>Escribe tu respuesta</mat-label>
-          <textarea matInput rows="3" [formControl]="replyControl"></textarea>
-          @if (replyControl.hasError('required') && replyControl.touched) {
-            <mat-error>El mensaje es obligatorio.</mat-error>
-          }
-        </mat-form-field>
-
-        <button mat-flat-button color="primary" type="submit" [disabled]="sending()">
-          <mat-icon>send</mat-icon>
-          Enviar
-        </button>
-      </form>
       }
     }
-  </section>
-</section>
+  </main>
+</div>

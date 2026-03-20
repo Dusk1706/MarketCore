@@ -1,5 +1,5 @@
+import { Component, ChangeDetectionStrategy, OnInit, computed, inject, signal, DestroyRef, ViewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -41,6 +41,8 @@ export class InboxPageComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
 
+  @ViewChild('messageContainer') private messageContainer?: ElementRef;
+
   conversations = signal<Conversation[]>([]);
   selectedConversation = signal<Conversation | null>(null);
   messages = signal<Message[]>([]);
@@ -56,9 +58,18 @@ export class InboxPageComponent implements OnInit {
 
   currentUserId = computed(() => this.authService.currentUser()?.id ?? null);
 
+  constructor() {
+    // Autoscroll effect whenever messages signal updates
+    effect(() => {
+      this.messages();
+      setTimeout(() => this.scrollToBottom(), 100);
+    });
+  }
+
   ngOnInit(): void {
     this.loadConversations();
-    this.listenToWebsocket();
+    // Delay websocket listening slightly to ensure session is stable
+    setTimeout(() => this.listenToWebsocket(), 500);
   }
 
   listenToWebsocket(): void {
@@ -67,15 +78,12 @@ export class InboxPageComponent implements OnInit {
       .subscribe((msg: Message) => {
         const selected = this.selectedConversation();
         if (selected && msg.conversation_id === selected.id) {
-          // Si estamos en la conversación correcta, agregamos el mensaje a la vista
-          // si no lo hemos enviado nosotros (evitamos duplicados porque la llamada POST ya lo agrega)
           if (msg.sender_id !== this.currentUserId()) {
             this.messages.update(items => [...items, msg]);
           }
         } else {
-          // Notificación global o actualización de la lista de conversaciones
           this.snackBar.open('Nuevo mensaje recibido', 'Ver', { duration: 3000 });
-          this.loadConversations(); // Recarga simple para reflejar cambios (opcional)
+          this.loadConversations();
         }
       });
   }
@@ -89,7 +97,6 @@ export class InboxPageComponent implements OnInit {
       },
       error: () => {
         this.loadingConversations.set(false);
-        this.snackBar.open('No se pudieron cargar las conversaciones', 'Cerrar', { duration: 3000 });
       }
     });
   }
@@ -111,22 +118,31 @@ export class InboxPageComponent implements OnInit {
       },
       error: () => {
         this.loadingMessages.set(false);
-        this.snackBar.open('No se pudo cargar el hilo de mensajes', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
-  sendReply(): void {
+  handleEnter(event: KeyboardEvent): void {
+    if (!event.shiftKey) {
+      event.preventDefault();
+      this.sendReply(event);
+    }
+  }
+
+  sendReply(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     const conversation = this.selectedConversation();
     const content = this.replyControl.value.trim();
 
-    if (!content) {
-      this.replyControl.markAsTouched();
+    if (!content || this.sending()) {
       return;
     }
 
     if (conversation?.id == null) {
-      this.snackBar.open('Selecciona una conversacion valida para enviar mensajes', 'Cerrar', { duration: 3000 });
       return;
     }
 
@@ -142,6 +158,13 @@ export class InboxPageComponent implements OnInit {
         this.snackBar.open(getApiErrorMessage(error, 'No se pudo enviar el mensaje'), 'Cerrar', { duration: 3500 });
       }
     });
+  }
+
+  private scrollToBottom(): void {
+    if (this.messageContainer) {
+      const el = this.messageContainer.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    }
   }
 
   isOwnMessage(message: Message): boolean {

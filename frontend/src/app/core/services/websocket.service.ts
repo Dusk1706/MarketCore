@@ -37,7 +37,6 @@ export class WebsocketService {
       });
 
       this.socket.on('connect', () => {
-        console.log('Websocket connected');
         this.socket?.emit('join', { user_id: userId });
       });
     }

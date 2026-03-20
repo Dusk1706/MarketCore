@@ -14,9 +14,9 @@ describe('InboxPageComponent', () => {
       ['conversationsGet', 'conversationsIdMessagesGet', 'conversationsIdMessagesPost']
     );
 
-    messagesApiSpy.conversationsGet.and.returnValue(of([]));
-    messagesApiSpy.conversationsIdMessagesGet.and.returnValue(of([]));
-    messagesApiSpy.conversationsIdMessagesPost.and.returnValue(of({ id: 2, content: 'reply', sender_id: 1 }));
+    messagesApiSpy.conversationsGet.and.returnValue(of([]) as any);
+    messagesApiSpy.conversationsIdMessagesGet.and.returnValue(of([]) as any);
+    messagesApiSpy.conversationsIdMessagesPost.and.returnValue(of({ id: 2, content: 'reply', sender_id: 1 }) as any);
 
     await TestBed.configureTestingModule({
       imports: [InboxPageComponent],
@@ -28,7 +28,7 @@ describe('InboxPageComponent', () => {
   });
 
   it('fetches conversations on init', () => {
-    messagesApiSpy.conversationsGet.and.returnValue(of([{ id: 10, product_id: 22 }]));
+    messagesApiSpy.conversationsGet.and.returnValue(of([{ id: 10, product_id: 22 }]) as any);
 
     const fixture = TestBed.createComponent(InboxPageComponent);
     fixture.detectChanges();
