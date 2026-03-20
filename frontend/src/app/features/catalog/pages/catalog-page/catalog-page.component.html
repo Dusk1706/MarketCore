@@ -3,12 +3,98 @@
     <div class="header-title">
       <span class="eyebrow">Selección Curada</span>
       <h1>Descubre Productos</h1>
-      <p>Encuentra lo que buscas al mejor precio</p>
-    </div>
-    <div class="header-search">
-      <app-search-bar (search)="onSearch($event)"></app-search-bar>
+      <p>Explora por categoría, acota tu presupuesto y prioriza publicaciones disponibles.</p>
     </div>
   </header>
+
+  <section class="filters-shell">
+    <form class="filters-card" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+      <div class="filters-grid">
+        <mat-form-field appearance="outline" class="filter-field filter-field--search" subscriptSizing="dynamic">
+          <mat-label>Buscar productos</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput formControlName="search" placeholder="Ej. iPhone, libros, monitor, guitarra">
+          @if (filtersForm.controls.search.value) {
+            <button mat-icon-button matSuffix type="button" (click)="clearSearch()" aria-label="Limpiar búsqueda">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+          <mat-label>Categoría</mat-label>
+          <mat-select formControlName="categorySlug">
+            <mat-option value="">Todas las categorías</mat-option>
+            @for (category of categories(); track $index) {
+              <mat-option [value]="category.slug ?? ''">
+                {{ category.name ?? category.slug }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+          <mat-label>Precio mínimo</mat-label>
+          <input matInput type="number" min="0" formControlName="minPrice" placeholder="0">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+          <mat-label>Precio máximo</mat-label>
+          <input matInput type="number" min="0" formControlName="maxPrice" placeholder="5000">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
+          <mat-label>Ordenar por</mat-label>
+          <mat-select formControlName="sortBy">
+            @for (option of sortOptions; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filters-footer">
+        <div class="filters-meta">
+          <mat-slide-toggle formControlName="includeSold" color="primary">
+            Mostrar productos vendidos
+          </mat-slide-toggle>
+
+          @if (priceRangeErrorMessage(); as errorMessage) {
+            <p class="filters-error">
+              <mat-icon aria-hidden="true">error_outline</mat-icon>
+              <span>{{ errorMessage }}</span>
+            </p>
+          }
+        </div>
+
+        <div class="filters-actions">
+          <button mat-button type="button" (click)="clearFilters()" [disabled]="!hasAppliedFilters() && !filtersForm.dirty">
+            Limpiar
+          </button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="filtersForm.invalid">
+            Aplicar filtros
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <section class="results-toolbar">
+    <div class="results-summary">
+      <span class="results-count">{{ resultsSummary() }}</span>
+      @if (hiddenSoldCount() > 0) {
+        <span class="results-note">{{ hiddenSoldCount() }} vendidos ocultos por defecto</span>
+      }
+    </div>
+
+    @if (hasAppliedFilters()) {
+      <mat-chip-set class="active-filters" aria-label="Filtros activos">
+        @for (label of activeFilterLabels(); track label) {
+          <mat-chip>{{ label }}</mat-chip>
+        }
+      </mat-chip-set>
+    }
+  </section>
 
   @if (isLoading()) {
     <div class="spinner-container">
@@ -22,7 +108,11 @@
         <div class="no-results">
           <mat-icon>search_off</mat-icon>
           <h3>No encontramos resultados</h3>
-          <p>Prueba una palabra más amplia o limpia tu búsqueda para ver más publicaciones.</p>
+          @if (hiddenSoldCount() > 0) {
+            <p>Hay publicaciones vendidas que coinciden con tus filtros. Activa “Mostrar productos vendidos” si quieres revisarlas.</p>
+          } @else {
+            <p>Ajusta la búsqueda, la categoría o el rango de precio para ver más publicaciones.</p>
+          }
         </div>
       }
     </div>

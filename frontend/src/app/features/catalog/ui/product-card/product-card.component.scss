@@ -15,6 +15,16 @@
   }
 }
 
+.product-card--sold {
+  .image-wrapper img {
+    filter: saturate(0.72);
+  }
+
+  .price {
+    color: #64748b;
+  }
+}
+
 .image-wrapper {
   position: relative;
   width: 100%;

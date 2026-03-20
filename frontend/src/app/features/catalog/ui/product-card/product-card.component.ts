@@ -28,6 +28,10 @@ export class ProductCardComponent {
   private snackBar = inject(MatSnackBar);
   isFavoritePending = signal(false);
 
+  constructor() {
+    this.favoritesService.ensureLoadedSilently();
+  }
+
   isOwnProduct = computed(() => {
     const p = this.product();
     const user = this.authService.currentUser();

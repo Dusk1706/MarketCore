@@ -1,4 +1,4 @@
-<mat-card class="product-card">
+<mat-card class="product-card" [class.product-card--sold]="product().is_sold">
   <div class="image-wrapper">
     @if (product().image_url) {
       <img mat-card-image [src]="product().image_url" [alt]="product().title">
@@ -38,7 +38,7 @@
   
   <mat-card-actions class="card-actions">
     <button mat-flat-button color="primary" [routerLink]="['/catalog/product', product().id]" class="action-btn">
-      Ver Detalles
+      {{ product().is_sold ? 'Ver publicación' : 'Ver detalles' }}
     </button>
   </mat-card-actions>
 </mat-card>

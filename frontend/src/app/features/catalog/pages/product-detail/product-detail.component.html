@@ -58,7 +58,7 @@
             <div class="rating-container">
               <div class="stars">
                 @for (star of ratingStars(); track $index) {
-                  <mat-icon [class.filled]="star !== 'star_border'">{{ star }}</mat-icon>
+                  <mat-icon [class.filled]="star !== 'star_outline'">{{ star }}</mat-icon>
                 }
               </div>
               <span class="rating-text">{{ averageRating() | number:'1.1-1' }} ({{ totalReviews() }} reseñas)</span>
@@ -115,7 +115,7 @@
                       <div class="review-rating">
                         @for (star of [1,2,3,4,5]; track star) {
                           <mat-icon [class.filled]="star <= (review.rating || 0)">
-                            {{ star <= (review.rating || 0) ? 'star' : 'star_border' }}
+                            {{ star <= (review.rating || 0) ? 'grade' : 'star_outline' }}
                           </mat-icon>
                         }
                       </div>
@@ -147,7 +147,7 @@
               } @else {
                 @if (currentUserBought() && !hasReviewed()) {
                   <button mat-flat-button color="accent" class="action-btn" (click)="onLeaveReview()">
-                    <mat-icon>star</mat-icon>
+                    <mat-icon>rate_review</mat-icon>
                     DEJAR RESEÑA
                   </button>
                 } @else {
