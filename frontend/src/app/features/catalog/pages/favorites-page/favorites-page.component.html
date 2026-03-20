@@ -1,5 +1,9 @@
 <div class="favorites-container">
-  <h2>Mis Favoritos</h2>
+  <header class="favorites-header">
+    <span class="eyebrow">Tu Coleccion</span>
+    <h2>Mis Favoritos</h2>
+    <p>Guarda productos que quieres seguir de cerca y vuelve rapido cuando estes listo para comprar.</p>
+  </header>
 
   @if (loading()) {
     <div class="loading-shade">
@@ -8,6 +12,7 @@
   } @else {
     @if (products().length === 0) {
       <div class="empty-state">
+        <h3>Aun no agregas favoritos</h3>
         <p>No tienes ningún producto en tus favoritos.</p>
         <a routerLink="/" class="back-link">Explorar catálogo</a>
       </div>
@@ -16,6 +21,7 @@
         @for (product of products(); track product.id) {
           <app-product-card 
             [product]="product"
+            [inFavoritesView]="true"
             (favoriteToggled)="onFavoriteToggled($event)">
           </app-product-card>
         }

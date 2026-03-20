@@ -16,8 +16,14 @@
       <div class="own-product-badge">TU ANUNCIO</div>
     }
 
-    <button mat-icon-button class="favorite-btn" (click)="toggleFavorite($event)" aria-label="Toggle favorite">
-      <mat-icon>favorite_border</mat-icon>
+    <button
+      mat-icon-button
+      class="favorite-btn"
+      [class.favorite-btn--active]="isFavoriteActive()"
+      (click)="toggleFavorite($event)"
+      [disabled]="isFavoritePending()"
+      [attr.aria-label]="favoriteAriaLabel()">
+      <mat-icon>{{ favoriteIcon() }}</mat-icon>
     </button>
   </div>
   

@@ -14,6 +14,7 @@ import { MessagesService } from '../../../../core/api/api/messages.service';
 import { Conversation, Message } from '../../../../core/api/model/models';
 import { AuthService } from '../../../../core/services/auth.service';
 import { WebsocketService } from '../../../../core/services/websocket.service';
+import { getApiErrorMessage } from '../../../../core/utils/http-error-message.util';
 
 @Component({
   selector: 'app-inbox-page',
@@ -119,8 +120,13 @@ export class InboxPageComponent implements OnInit {
     const conversation = this.selectedConversation();
     const content = this.replyControl.value.trim();
 
-    if (!conversation?.id || !content) {
+    if (!content) {
       this.replyControl.markAsTouched();
+      return;
+    }
+
+    if (conversation?.id == null) {
+      this.snackBar.open('Selecciona una conversacion valida para enviar mensajes', 'Cerrar', { duration: 3000 });
       return;
     }
 
@@ -131,9 +137,9 @@ export class InboxPageComponent implements OnInit {
         this.replyControl.setValue('');
         this.sending.set(false);
       },
-      error: () => {
+      error: (error) => {
         this.sending.set(false);
-        this.snackBar.open('No se pudo enviar el mensaje', 'Cerrar', { duration: 3000 });
+        this.snackBar.open(getApiErrorMessage(error, 'No se pudo enviar el mensaje'), 'Cerrar', { duration: 3500 });
       }
     });
   }

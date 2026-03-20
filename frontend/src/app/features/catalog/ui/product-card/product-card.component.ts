@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -7,6 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { Product } from '../../../../core/api/model/models';
 import { FavoritesService } from '../../../../core/api/api/favorites.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -19,11 +20,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ProductCardComponent {
   product = input.required<Product>();
+  inFavoritesView = input(false);
   favoriteToggled = output<Product>();
 
   private favoritesApi = inject(FavoritesService);
   private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
+  isFavoritePending = signal(false);
+  isFavorited = signal(false);
 
   isOwnProduct = computed(() => {
     const p = this.product();
@@ -31,27 +35,46 @@ export class ProductCardComponent {
     return !!(p && user && p.seller?.id === user.id);
   });
 
+  isFavoriteActive = computed(() => this.inFavoritesView() || this.isFavorited());
+
+  favoriteIcon = computed(() => this.isFavoriteActive() ? 'favorite' : 'favorite_border');
+
+  favoriteAriaLabel = computed(() => this.isFavoriteActive() ? 'Quitar de favoritos' : 'Agregar a favoritos');
+
   toggleFavorite(event: Event): void {
     event.stopPropagation();
     event.preventDefault();
-    
+
+    if (this.isFavoritePending()) {
+      return;
+    }
+
     const p = this.product();
-    // Assuming adding by default. In a real app we'd track state locally or globally.
-    // For now we just emit the toggle event, and if it's on the favorites page it removes it.
-    // We can just call delete if we are in the favorites page. But let's just make it a simple emit for now.
-    // Or we can just call the API here to remove if we pass a mode.
-    this.favoritesApi.usersMeFavoritesProductIdDelete(p.id!).subscribe({
+    if (!p.id) {
+      this.snackBar.open('No se pudo actualizar favorito', 'Cerrar', { duration: 2500 });
+      return;
+    }
+
+    const shouldRemove = this.inFavoritesView() || this.isFavorited();
+    const request$ = shouldRemove
+      ? this.favoritesApi.usersMeFavoritesProductIdDelete(p.id)
+      : this.favoritesApi.usersMeFavoritesProductIdPost(p.id);
+
+    this.isFavoritePending.set(true);
+    request$.subscribe({
       next: () => {
-        this.favoriteToggled.emit(p);
-        this.snackBar.open('Eliminado de favoritos', 'Cerrar', { duration: 2000 });
+        if (this.inFavoritesView()) {
+          this.favoriteToggled.emit(p);
+          this.snackBar.open('Eliminado de favoritos', 'Cerrar', { duration: 2000 });
+        } else {
+          this.isFavorited.set(!shouldRemove);
+          this.snackBar.open(shouldRemove ? 'Eliminado de favoritos' : 'Agregado a favoritos', 'Cerrar', { duration: 2000 });
+        }
+        this.isFavoritePending.set(false);
       },
       error: () => {
-        // Fallback to add if it was a toggle
-        this.favoritesApi.usersMeFavoritesProductIdPost(p.id!).subscribe({
-          next: () => {
-            this.snackBar.open('Agregado a favoritos', 'Cerrar', { duration: 2000 });
-          }
-        });
+        this.snackBar.open('No se pudo actualizar favoritos', 'Cerrar', { duration: 2500 });
+        this.isFavoritePending.set(false);
       }
     });
   }

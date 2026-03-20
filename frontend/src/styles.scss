@@ -1,4 +1,29 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+:root {
+	--mc-font-sans: 'Archivo', 'Segoe UI', sans-serif;
+	--mc-font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+	--mc-bg: #f7f8f5;
+	--mc-surface: #ffffff;
+	--mc-text: #14231a;
+	--mc-muted: #5e6b63;
+	--mc-line: #dde5de;
+	--mc-primary: #0f766e;
+	--mc-primary-strong: #115e59;
+	--mc-accent: #ca8a04;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: var(--mc-font-sans);
+	color: var(--mc-text);
+	background:
+		radial-gradient(circle at 12% 10%, rgb(15 118 110 / 0.12), transparent 36%),
+		radial-gradient(circle at 88% 0%, rgb(202 138 4 / 0.12), transparent 28%),
+		var(--mc-bg);
+}
