@@ -15,6 +15,7 @@ import { OrdersService } from '../../../../core/api/api/orders.service';
 import { ProductsService } from '../../../../core/api/api/products.service';
 import { ReviewsService } from '../../../../core/api/api/reviews.service';
 import { Product } from '../../../../core/api/model/product';
+import { Review } from '../../../../core/api/model/review';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ContactDialogComponent } from '../../components/contact-dialog/contact-dialog.component';
 import { ReviewDialogComponent, ReviewDialogResult } from '../../components/review-dialog/review-dialog.component';
@@ -53,6 +54,7 @@ export class ProductDetailComponent implements OnInit {
   averageRating = signal(0);
   totalSales = signal(0);
   totalReviews = signal(0);
+  reviews = signal<Review[]>([]);
   currentUserBought = signal(false);
   hasReviewed = signal(false);
   currentOrderId = signal<number | null>(null);
@@ -194,11 +196,13 @@ export class ProductDetailComponent implements OnInit {
         this.averageRating.set(data.average_rating ?? 0);
         this.totalSales.set(data.total_sales ?? 0);
         this.totalReviews.set(data.reviews?.length ?? 0);
+        this.reviews.set(data.reviews ?? []);
       },
       error: () => {
         this.averageRating.set(0);
         this.totalSales.set(0);
         this.totalReviews.set(0);
+        this.reviews.set([]);
       }
     });
   }

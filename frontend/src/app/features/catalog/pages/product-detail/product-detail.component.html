@@ -92,6 +92,43 @@
             <p class="mat-body-large">{{ p.description }}</p>
           </div>
 
+          <mat-divider></mat-divider>
+
+          <div class="reviews-container">
+            <h3 class="mat-title-medium">Reseñas del vendedor</h3>
+            @if (reviews().length === 0) {
+              <p class="mat-body-medium text-muted">Aún no hay reseñas.</p>
+            } @else {
+              <div class="reviews-list">
+                @for (review of reviews(); track review.id) {
+                  <mat-card appearance="outlined" class="review-card">
+                    <mat-card-header>
+                      <div mat-card-avatar class="reviewer-avatar">
+                        <mat-icon>person</mat-icon>
+                      </div>
+                      <mat-card-title class="reviewer-name">{{ review.reviewer?.name || 'Usuario anónimo' }}</mat-card-title>
+                      <mat-card-subtitle class="review-date">
+                        {{ review.created_at | date:'mediumDate' }}
+                      </mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                      <div class="review-rating">
+                        @for (star of [1,2,3,4,5]; track star) {
+                          <mat-icon [class.filled]="star <= (review.rating || 0)">
+                            {{ star <= (review.rating || 0) ? 'star' : 'star_border' }}
+                          </mat-icon>
+                        }
+                      </div>
+                      @if (review.comment) {
+                        <p class="review-comment">{{ review.comment }}</p>
+                      }
+                    </mat-card-content>
+                  </mat-card>
+                }
+              </div>
+            }
+          </div>
+
           <div class="purchase-actions">
             <mat-card appearance="outlined" class="shipping-card">
               <mat-icon>local_shipping</mat-icon>
