@@ -71,6 +71,11 @@ def create_app(config_class=Config):
         app, resources={r"/api/*": {"origins": "*"}}
     )  # Fine-tune CORS for Angular
     limiter.init_app(app)
+    
+    from .extensions import socketio
+    socketio.init_app(app)
+    
+    from . import sockets  # noqa: F401
 
     # Register Blueprints
     from .api.v1.auth import auth_bp

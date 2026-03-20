@@ -9,7 +9,8 @@
  */
 
 
-export interface MessageCreate { 
-    content: string;
+export interface AuthResetPasswordPostRequest { 
+    token?: string;
+    new_password?: string;
 }
 

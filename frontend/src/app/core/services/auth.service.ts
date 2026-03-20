@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { tap } from 'rxjs';
-import { AuthToken, AuthTokenUser, UserLogin, UserRegister } from '../api/model/models';
+import { AuthToken, User, UserLogin, UserRegister } from '../api/model/models';
 import { AuthService as ApiAuthService } from '../api/api/auth.service';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { AuthService as ApiAuthService } from '../api/api/auth.service';
 export class AuthService {
   private apiAuth = inject(ApiAuthService);
   
-  private _currentUser = signal<AuthTokenUser | null>(null);
+  private _currentUser = signal<User | null>(null);
   currentUser = this._currentUser.asReadonly();
   
   isAuthenticated = computed(() => !!this._currentUser());

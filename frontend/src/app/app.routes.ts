@@ -32,5 +32,10 @@ export const routes: Routes = [
     path: 'inbox',
     canActivate: [authGuard],
     loadComponent: () => import('./features/messages/pages/inbox-page/inbox-page.component').then(m => m.InboxPageComponent)
+  },
+  {
+    path: 'favorites',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/catalog/pages/favorites-page/favorites-page.component').then(m => m.FavoritesPageComponent)
   }
 ];

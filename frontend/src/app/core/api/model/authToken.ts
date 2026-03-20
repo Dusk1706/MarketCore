@@ -7,11 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AuthTokenUser } from './authTokenUser';
+import { User } from './user';
 
 
 export interface AuthToken { 
     access_token?: string;
-    user?: AuthTokenUser;
+    user?: User;
 }
 

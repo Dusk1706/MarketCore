@@ -7,7 +7,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ProductSeller } from './productSeller';
+import { User } from './user';
+import { ProductTrustSignals } from './productTrustSignals';
 
 
 export interface Product { 
@@ -19,10 +20,7 @@ export interface Product {
     is_sold?: boolean;
     image_url?: string;
     created_at?: string;
-    seller?: ProductSeller;
-    trust_signals?: {
-        average_rating?: number;
-        total_sales?: number;
-    };
+    seller?: User;
+    trust_signals?: ProductTrustSignals;
 }
 

@@ -9,7 +9,8 @@
  */
 
 
-export interface MessageCreate { 
-    content: string;
+export interface UsersMePutRequest { 
+    name?: string;
+    email?: string;
 }
 

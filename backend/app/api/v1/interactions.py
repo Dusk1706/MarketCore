@@ -217,4 +217,11 @@ def add_message(conv_id):
     db.session.add(msg)
     db.session.commit()
 
-    return jsonify(MessageSchema().dump(msg)), 201
+    dumped_msg = MessageSchema().dump(msg)
+    
+    from app.extensions import socketio
+    recipient_id = conv.seller_id if current_user_id == conv.buyer_id else conv.buyer_id
+    socketio.emit('new_message', dumped_msg, room=f"user_{recipient_id}")
+    socketio.emit('new_message', dumped_msg, room=f"user_{current_user_id}")
+
+    return jsonify(dumped_msg), 201

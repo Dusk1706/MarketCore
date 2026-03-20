@@ -9,7 +9,10 @@
  */
 
 
-export interface MessageCreate { 
-    content: string;
+export interface ProductsGet200ResponseMeta { 
+    total?: number;
+    page?: number;
+    per_page?: number;
+    pages?: number;
 }
 

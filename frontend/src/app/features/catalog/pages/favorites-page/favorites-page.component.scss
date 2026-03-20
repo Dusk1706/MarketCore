@@ -1,0 +1,45 @@
+.favorites-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  h2 {
+    margin-bottom: 2rem;
+    color: #333;
+  }
+}
+
+.loading-shade {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+
+  p {
+    color: #666;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .back-link {
+    color: #3f51b5;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -12,6 +13,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MessagesService } from '../../../../core/api/api/messages.service';
 import { Conversation, Message } from '../../../../core/api/model/models';
 import { AuthService } from '../../../../core/services/auth.service';
+import { WebsocketService } from '../../../../core/services/websocket.service';
 
 @Component({
   selector: 'app-inbox-page',
@@ -34,7 +36,9 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class InboxPageComponent implements OnInit {
   private readonly messagesApi = inject(MessagesService);
   private readonly authService = inject(AuthService);
+  private readonly wsService = inject(WebsocketService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly destroyRef = inject(DestroyRef);
 
   conversations = signal<Conversation[]>([]);
   selectedConversation = signal<Conversation | null>(null);
@@ -53,6 +57,26 @@ export class InboxPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadConversations();
+    this.listenToWebsocket();
+  }
+
+  listenToWebsocket(): void {
+    this.wsService.onNewMessage()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((msg: Message) => {
+        const selected = this.selectedConversation();
+        if (selected && msg.conversation_id === selected.id) {
+          // Si estamos en la conversación correcta, agregamos el mensaje a la vista
+          // si no lo hemos enviado nosotros (evitamos duplicados porque la llamada POST ya lo agrega)
+          if (msg.sender_id !== this.currentUserId()) {
+            this.messages.update(items => [...items, msg]);
+          }
+        } else {
+          // Notificación global o actualización de la lista de conversaciones
+          this.snackBar.open('Nuevo mensaje recibido', 'Ver', { duration: 3000 });
+          this.loadConversations(); // Recarga simple para reflejar cambios (opcional)
+        }
+      });
   }
 
   loadConversations(): void {

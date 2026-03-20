@@ -9,7 +9,11 @@
  */
 
 
-export interface MessageCreate { 
-    content: string;
+export interface UploadsPost201Response { 
+    message?: string;
+    /**
+     * URL pública de la imagen
+     */
+    url?: string;
 }
 

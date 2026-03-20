@@ -1,0 +1,25 @@
+<div class="favorites-container">
+  <h2>Mis Favoritos</h2>
+
+  @if (loading()) {
+    <div class="loading-shade">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+    @if (products().length === 0) {
+      <div class="empty-state">
+        <p>No tienes ningún producto en tus favoritos.</p>
+        <a routerLink="/" class="back-link">Explorar catálogo</a>
+      </div>
+    } @else {
+      <div class="products-grid">
+        @for (product of products(); track product.id) {
+          <app-product-card 
+            [product]="product"
+            (favoriteToggled)="onFavoriteToggled($event)">
+          </app-product-card>
+        }
+      </div>
+    }
+  }
+</div>

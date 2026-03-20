@@ -11,6 +11,7 @@
       <button mat-button routerLink="/catalog">Catálogo</button>
       
       @if (authService.isAuthenticated()) {
+        <button mat-button routerLink="/favorites">Favoritos</button>
         <button mat-button routerLink="/seller">Vender</button>
         <button mat-button routerLink="/inbox">Inbox</button>
         

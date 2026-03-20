@@ -15,7 +15,7 @@ export interface ProductCreate {
     price: number;
     category_slug: string;
     /**
-     * URL de la imagen o base64 (Placeholder para demo)
+     * URL de la imagen
      */
     image_url?: string;
 }

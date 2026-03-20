@@ -9,7 +9,8 @@
  */
 
 
-export interface MessageCreate { 
-    content: string;
+export interface ProductTrustSignals { 
+    average_rating?: number;
+    total_sales?: number;
 }
 

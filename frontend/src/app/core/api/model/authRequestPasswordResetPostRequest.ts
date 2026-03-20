@@ -9,7 +9,7 @@
  */
 
 
-export interface MessageCreate { 
-    content: string;
+export interface AuthRequestPasswordResetPostRequest { 
+    email?: string;
 }
 

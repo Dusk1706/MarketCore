@@ -9,7 +9,8 @@
  */
 
 
-export interface MessageCreate { 
-    content: string;
+export interface UsersMePasswordPutRequest { 
+    current_password?: string;
+    new_password?: string;
 }
 

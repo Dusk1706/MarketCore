@@ -11,6 +11,10 @@
     @if (product().is_sold) {
       <div class="sold-badge">VENDIDO</div>
     }
+
+    <button mat-icon-button class="favorite-btn" (click)="toggleFavorite($event)" aria-label="Toggle favorite">
+      <mat-icon>favorite_border</mat-icon>
+    </button>
   </div>
   
   <mat-card-content class="card-body">

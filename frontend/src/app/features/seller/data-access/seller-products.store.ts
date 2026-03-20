@@ -22,7 +22,7 @@ export class SellerProductsStore {
     this._loading.set(true);
     return forkJoin({
       categories: this.categoriesApi.categoriesGet(),
-      products: this.productsApi.productsGet(undefined, undefined, undefined, undefined, true)
+      products: this.productsApi.productsGet(undefined, undefined, undefined, undefined, undefined, undefined, true)
     }).pipe(
       tap(({ categories, products }) => {
         this._categories.set(categories);
@@ -34,7 +34,7 @@ export class SellerProductsStore {
 
   refreshProducts() {
     this._loading.set(true);
-    return this.productsApi.productsGet(undefined, undefined, undefined, undefined, true).pipe(
+    return this.productsApi.productsGet(undefined, undefined, undefined, undefined, undefined, undefined, true).pipe(
       map((response) => this.normalizeProductsResponse(response)),
       tap((products) => this._products.set(products)),
       finalize(() => this._loading.set(false))
