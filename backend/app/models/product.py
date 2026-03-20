@@ -17,6 +17,10 @@ class Product(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), nullable=False)
 
+    @property
+    def category_slug(self):
+        return self.category.slug if self.category else None
+
     def to_dict(self) -> dict:
         return {
             "id": self.id,

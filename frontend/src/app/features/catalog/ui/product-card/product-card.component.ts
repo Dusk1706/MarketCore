@@ -22,7 +22,14 @@ export class ProductCardComponent {
   favoriteToggled = output<Product>();
 
   private favoritesApi = inject(FavoritesService);
+  private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
+
+  isOwnProduct = computed(() => {
+    const p = this.product();
+    const user = this.authService.currentUser();
+    return !!(p && user && p.seller?.id === user.id);
+  });
 
   toggleFavorite(event: Event): void {
     event.stopPropagation();

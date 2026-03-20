@@ -12,6 +12,10 @@
       <div class="sold-badge">VENDIDO</div>
     }
 
+    @if (isOwnProduct()) {
+      <div class="own-product-badge">TU ANUNCIO</div>
+    }
+
     <button mat-icon-button class="favorite-btn" (click)="toggleFavorite($event)" aria-label="Toggle favorite">
       <mat-icon>favorite_border</mat-icon>
     </button>

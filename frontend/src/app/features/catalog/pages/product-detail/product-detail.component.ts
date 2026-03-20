@@ -50,6 +50,11 @@ export class ProductDetailComponent implements OnInit {
   totalReviews = signal(0);
 
   ratingStars = computed(() => this.buildRatingStars(this.averageRating()));
+  isOwnProduct = computed(() => {
+    const p = this.product();
+    const user = this.authService.currentUser();
+    return !!(p && user && p.seller?.id === user.id);
+  });
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');

@@ -89,16 +89,23 @@
             </div>
             
             <div class="actions">
-              <button mat-flat-button color="primary" class="buy-button" (click)="onBuy()" [disabled]="p.is_sold">
-                <mat-icon>shopping_cart</mat-icon>
-                <span>COMPRAR AHORA</span>
-              </button>
-              
-              <!-- Botón secundario armonizado (Outline) -->
-              <button mat-stroked-button color="primary" class="contact-button" (click)="onContactSeller()">
-                <mat-icon>chat</mat-icon>
-                <span>Contactar Vendedor</span>
-              </button>
+              @if (isOwnProduct()) {
+                <button mat-flat-button color="accent" class="edit-button" [routerLink]="['/seller']">
+                  <mat-icon>edit</mat-icon>
+                  <span>GESTIONAR MI PRODUCTO</span>
+                </button>
+              } @else {
+                <button mat-flat-button color="primary" class="buy-button" (click)="onBuy()" [disabled]="p.is_sold">
+                  <mat-icon>shopping_cart</mat-icon>
+                  <span>COMPRAR AHORA</span>
+                </button>
+                
+                <!-- Botón secundario armonizado (Outline) -->
+                <button mat-stroked-button color="primary" class="contact-button" (click)="onContactSeller()">
+                  <mat-icon>chat</mat-icon>
+                  <span>Contactar Vendedor</span>
+                </button>
+              }
             </div>
           </div>
         </div>
