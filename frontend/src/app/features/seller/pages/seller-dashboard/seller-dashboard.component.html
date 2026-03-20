@@ -5,30 +5,14 @@
       <p>Gestiona tu inventario y ventas</p>
     </div>
 
-    @if (!ui.formOpen()) {
-      <button mat-flat-button color="primary" (click)="openForm()" class="action-btn">
-        <mat-icon>add</mat-icon>
-        PUBLICAR PRODUCTO
-      </button>
-    }
+    <button mat-flat-button color="primary" (click)="openForm()" class="action-btn">
+      <mat-icon>add</mat-icon>
+      PUBLICAR PRODUCTO
+    </button>
   </header>
 
-  @if (ui.formOpen()) {
-    <div class="form-section">
-      <app-product-form 
-        [categories]="categories()" 
-        [initialData]="ui.editingProduct()" 
-        [isLoading]="ui.loading()"
-        [isUploading]="ui.uploading()"
-        (save)="onSave($event)"
-        (uploadFile)="onUploadImage($event)"
-        (cancel)="closeForm()">
-      </app-product-form>
-    </div>
-  }
-
   <div class="table-section">
-    @if (ui.loading() && !ui.formOpen()) {
+    @if (ui.loading()) {
       <div class="spinner-container">
         <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
       </div>
@@ -72,10 +56,10 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef class="text-center">Acciones</th>
               <td mat-cell *matCellDef="let p" class="text-center">
-                <button mat-icon-button color="primary" (click)="openForm(p)" [disabled]="ui.formOpen()" matTooltip="Editar">
+                <button mat-icon-button color="primary" (click)="openForm(p)" matTooltip="Editar">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" (click)="onDelete(p.id)" [disabled]="ui.formOpen()" matTooltip="Eliminar">
+                <button mat-icon-button color="warn" (click)="onDelete(p.id)" matTooltip="Eliminar">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>

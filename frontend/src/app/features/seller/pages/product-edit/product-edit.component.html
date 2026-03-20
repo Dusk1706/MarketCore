@@ -1,0 +1,29 @@
+<div class="edit-container">
+  <header class="edit-header">
+    <button mat-icon-button (click)="onCancel()" class="back-btn">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-title">
+      <h1>{{ ui.editingProduct() ? 'Editar Producto' : 'Publicar Producto' }}</h1>
+      <p>{{ ui.editingProduct() ? 'Actualiza los detalles de tu artículo' : 'Completa el formulario para publicar tu artículo' }}</p>
+    </div>
+  </header>
+
+  @if (ui.loading() && !ui.editingProduct()) {
+    <div class="spinner-container">
+      <mat-progress-spinner mode="indeterminate" color="primary"></mat-progress-spinner>
+    </div>
+  } @else {
+    <div class="form-container">
+      <app-product-form
+        [categories]="categories()"
+        [initialData]="ui.editingProduct()"
+        [isLoading]="ui.loading()"
+        [isUploading]="ui.uploading()"
+        (save)="onSave($event)"
+        (uploadFile)="onUploadImage($event)"
+        (cancel)="onCancel()">
+      </app-product-form>
+    </div>
+  }
+</div>

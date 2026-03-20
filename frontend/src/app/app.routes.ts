@@ -26,7 +26,20 @@ export const routes: Routes = [
   {
     path: 'seller',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/seller/pages/seller-dashboard/seller-dashboard.component').then(m => m.SellerDashboardComponent)
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/seller/pages/seller-dashboard/seller-dashboard.component').then(m => m.SellerDashboardComponent)
+      },
+      {
+        path: 'product/new',
+        loadComponent: () => import('./features/seller/pages/product-edit/product-edit.component').then(m => m.ProductEditComponent)
+      },
+      {
+        path: 'product/edit/:id',
+        loadComponent: () => import('./features/seller/pages/product-edit/product-edit.component').then(m => m.ProductEditComponent)
+      }
+    ]
   },
   {
     path: 'inbox',
