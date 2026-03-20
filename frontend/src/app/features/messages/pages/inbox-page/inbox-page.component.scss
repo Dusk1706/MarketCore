@@ -37,6 +37,10 @@
         border-bottom: 1px solid rgba(0,0,0,0.03);
         transition: all 0.2s ease;
 
+        ::ng-deep .mdc-list-item__content {
+          overflow: hidden;
+        }
+
         &.active {
           background-color: #eff6ff;
           border-left: 4px solid var(--mc-primary-strong);
@@ -58,6 +62,10 @@
           overflow: hidden;
           text-overflow: ellipsis;
           display: block;
+        }
+
+        .conv-chevron {
+          margin-right: 4px;
         }
       }
     }
