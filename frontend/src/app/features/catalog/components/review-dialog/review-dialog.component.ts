@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,7 +35,7 @@ export interface ReviewDialogResult {
         <div class="star-rating">
           @for (star of [1, 2, 3, 4, 5]; track star) {
             <button mat-icon-button type="button" (click)="setRating(star)">
-              <mat-icon [class.filled]="star <= rating()">{{ star <= rating() ? 'star' : 'star_border' }}</mat-icon>
+              <mat-icon [class.filled]="star <= ratingValue()">{{ star <= ratingValue() ? 'star' : 'star_border' }}</mat-icon>
             </button>
           }
         </div>
@@ -51,7 +51,7 @@ export interface ReviewDialogResult {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button (click)="onCancel()">Cancelar</button>
-      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="!reviewForm.valid">
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="!isFormValid()">
         Enviar Reseña
       </button>
     </mat-dialog-actions>
@@ -95,18 +95,25 @@ export class ReviewDialogComponent {
   data = inject<ReviewDialogData>(MAT_DIALOG_DATA);
   fb = inject(FormBuilder);
 
+  ratingValue = signal(0);
+  isFormValid = signal(false);
+
   reviewForm = this.fb.group({
     rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
     comment: ['']
   });
 
-  get rating() {
-    return () => this.reviewForm.get('rating')?.value || 0;
+  constructor() {
+    this.reviewForm.statusChanges.subscribe(status => {
+      this.isFormValid.set(status === 'VALID');
+    });
   }
 
   setRating(rating: number) {
+    this.ratingValue.set(rating);
     this.reviewForm.patchValue({ rating });
     this.reviewForm.get('rating')?.markAsTouched();
+    this.reviewForm.updateValueAndValidity(); // Asegura revalidar
   }
 
   onCancel() {
@@ -119,3 +126,4 @@ export class ReviewDialogComponent {
     }
   }
 }
+
