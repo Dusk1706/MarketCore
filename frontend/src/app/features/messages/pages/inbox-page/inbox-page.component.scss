@@ -45,11 +45,19 @@
         .conv-title {
           font-weight: 700;
           color: var(--mc-text);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: block;
         }
         
         .conv-subtitle {
           font-size: 0.8rem;
           color: var(--mc-muted);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: block;
         }
       }
     }
